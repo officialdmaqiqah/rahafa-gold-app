@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Sidebar,
   SidebarContent,
@@ -7,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { Home, Package, DollarSign, ArrowDownCircle, Archive, FileText, RefreshCcw, PieChart, Settings, LogOut, History, Wallet, CalendarClock } from "lucide-react"
 import Link from "next/link"
@@ -28,6 +31,8 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const { setOpenMobile } = useSidebar()
+  
   return (
     <Sidebar className="border-r border-slate-200 dark:border-sidebar-border bg-white dark:bg-sidebar">
       <SidebarContent>
@@ -42,6 +47,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     render={<Link href={item.url} />} 
+                    onClick={() => setOpenMobile(false)}
                     className="hover:bg-primary/10 dark:hover:bg-primary/15 text-slate-700 dark:text-sidebar-foreground hover:text-primary dark:hover:text-primary transition-all duration-300 rounded-lg mx-2 w-[calc(100%-1rem)] py-6 group"
                   >
                     <item.icon className="text-slate-500 dark:text-muted-foreground group-hover:text-primary dark:group-hover:text-primary transition-colors w-5 h-5 mr-1" />
