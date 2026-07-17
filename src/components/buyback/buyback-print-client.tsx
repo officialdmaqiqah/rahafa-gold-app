@@ -129,7 +129,7 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
         </div>
 
         {/* Items */}
-        <table className="w-full mb-8">
+        <table className="w-full mb-8 hidden sm:table print:table">
           <thead>
             <tr className="border-y-2 border-black">
               <th className="py-2 text-left">Nama Barang</th>
@@ -158,6 +158,24 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
             </tr>
           </tfoot>
         </table>
+
+        {/* Mobile View */}
+        <div className="block sm:hidden print:hidden border-y-2 border-black mb-8 divide-y divide-gray-200">
+          {transaction.transaction_items?.map((item: any) => (
+            <div key={item.id} className="py-3">
+              <div className="font-bold">{item.products?.name}</div>
+              <div className="text-xs text-muted-foreground mb-1">{item.products?.item_code} - {item.products?.weight}{item.products?.unit}</div>
+              <div className="flex justify-between items-center text-sm">
+                 <div>{item.quantity} x {formatRupiah(item.unit_price)}</div>
+                 <div className="font-bold text-base">Rp {formatRupiah(item.quantity * item.unit_price)}</div>
+              </div>
+            </div>
+          ))}
+          <div className="py-3 border-t-2 border-black font-bold flex justify-between items-center">
+            <span>TOTAL PEMBAYARAN:</span>
+            <span className="text-lg">Rp {formatRupiah(transaction.total_amount)}</span>
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="grid grid-cols-2 gap-8 mb-8 text-sm">

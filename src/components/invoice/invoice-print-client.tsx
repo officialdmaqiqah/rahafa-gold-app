@@ -92,9 +92,10 @@ export function InvoicePrintClient({ transaction, items, settings }: InvoicePrin
           </div>
         </div>
 
-        {/* Table */}
+        {/* Table / List */}
         <div className="mb-8 overflow-hidden rounded border border-gray-300">
-          <table className="w-full text-left text-sm">
+          {/* Desktop & Print View */}
+          <table className="w-full text-left text-sm hidden sm:table print:table">
             <thead className="bg-gray-100 border-b border-gray-300">
               <tr>
                 <th className="py-2 px-3">Deskripsi Barang</th>
@@ -120,6 +121,24 @@ export function InvoicePrintClient({ transaction, items, settings }: InvoicePrin
               ))}
             </tbody>
           </table>
+
+          {/* Mobile View */}
+          <div className="block sm:hidden print:hidden divide-y divide-gray-200">
+            {items.map((item, idx) => (
+              <div key={idx} className="p-3 text-sm">
+                <div className="font-medium text-base mb-1">{item.product.name}</div>
+                <div className="text-xs text-gray-500 mb-2">Kode: {item.product.item_code} | Gramasi: {item.product.weight} {item.product.unit}</div>
+                <div className="flex justify-between items-center">
+                  <div className="text-gray-600">
+                    {item.quantity} x Rp {formatRupiah(item.unit_price)}
+                  </div>
+                  <div className="font-semibold text-black">
+                    Rp {formatRupiah(item.unit_price * item.quantity)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Totals */}
