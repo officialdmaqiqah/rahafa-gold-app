@@ -24,6 +24,9 @@ export async function loginAction(prevState: any, formData: FormData) {
       .single();
 
     if (error) {
+      if (error.message?.includes("fetch failed") || error.message?.includes("ENOTFOUND")) {
+        return { error: "Gagal terhubung ke server database Supabase. Silakan periksa URL Supabase di .env.local atau status proyek Supabase Anda." };
+      }
       return { error: `DB Error: ${error.message}` };
     }
     

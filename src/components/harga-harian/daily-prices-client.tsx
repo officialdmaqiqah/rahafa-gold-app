@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Search, Save, Copy, CheckCircle, AlertTriangle, Loader2, PlusCircle } from "lucide-react";
+import { Search, Save, Copy, CheckCircle, AlertTriangle, Loader2, PlusCircle, Zap } from "lucide-react";
 import { saveDailyPricesDraft, activateDailyPrices, copyPreviousPrices } from "@/app/(dashboard)/harga-harian/actions";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BulkUpdateModal } from "./bulk-update-modal";
 
 interface DailyPricesClientProps {
   date: string;
@@ -28,6 +29,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [isEditingNewSession, setIsEditingNewSession] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   
   // Local state for form values
   const [prices, setPrices] = useState<Record<string, { retail: string, reseller: string, buyback: string }>>({});
@@ -238,6 +240,11 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
             </Button>
           )}
           {effectiveStatus !== "active" && (
+            <Button onClick={() => setIsBulkModalOpen(true)} disabled={isPending} variant="outline" className="px-4 h-9 border-amber-500/40 text-amber-950 bg-amber-50/80 hover:bg-amber-100 hover:text-amber-900 dark:border-amber-500/30 dark:text-amber-300 dark:bg-amber-900/20 font-semibold shadow-sm transition-all">
+              <Zap className="h-4 w-4 mr-1 text-amber-600 fill-amber-500/20" /> Update Massal (6 Kategori)
+            </Button>
+          )}
+          {effectiveStatus !== "active" && (
             <Button onClick={handleSaveDraft} disabled={isPending} className="px-4 h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md transition-all">
               <Save className="h-4 w-4 mr-1" /> {isEditingNewSession ? "Simpan Draft Sesi Baru" : "Simpan Draft"}
             </Button>
@@ -399,6 +406,19 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Category Update Modal */}
+      <BulkUpdateModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        data={data}
+        currentPrices={prices}
+        onApply={(newPrices) => {
+          setPrices(newPrices);
+          setSuccessMsg("Kenaikan/penurunan harga 6 kategori berhasil diterapkan ke seluruh varian produk! Silakan periksa kembali dan klik 'Simpan Draft'.");
+          setTimeout(() => setSuccessMsg(""), 5000);
+        }}
+      />
     </div>
   );
 }
