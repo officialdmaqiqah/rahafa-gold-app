@@ -81,34 +81,6 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
     return new Intl.NumberFormat("id-ID").format(num);
   };
 
-  const calculateDeltaForCategory = (catKey: CategoryKey): number => {
-    const input = categoryInputs[catKey];
-    if (input.mode === "delta") {
-      const amount = parseInt(input.deltaAmount.replace(/\D/g, "") || "0");
-      if (amount > 0) {
-        return input.direction === "up" ? amount : -amount;
-      }
-    } else if (input.mode === "base") {
-      const newBase = parseInt(input.basePrice.replace(/\D/g, "") || "0");
-      if (newBase > 0) {
-        const categoryItems = groupedProducts[catKey];
-        const benchmarkItem = categoryItems.find(i => 
-          catKey === "dirham" ? (i.product.weight === 3.11 || i.product.name.includes("1 DIRHAM")) : (i.product.weight === 1)
-        ) || categoryItems[0];
-
-        if (benchmarkItem) {
-          const currentRetailStr = currentPrices[benchmarkItem.product.id]?.retail || 
-                                 (benchmarkItem.price?.retail_sell_price ? String(benchmarkItem.price.retail_sell_price) : "0");
-          const currentBase = parseInt(currentRetailStr) || 0;
-          if (currentBase > 0) {
-            return newBase - currentBase;
-          }
-        }
-      }
-    }
-    return 0;
-  };
-
   const handleReset = () => {
     setCategoryInputs({
       antam_certicard: { mode: "delta", direction: "up", deltaAmount: "", basePrice: "" },
@@ -128,25 +100,38 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
       const catKey = matchProductCategory(p);
       if (!catKey) return;
 
-      const deltaPerUnit = calculateDeltaForCategory(catKey);
+      const input = categoryInputs[catKey];
+      if (!input) return;
 
-      if (deltaPerUnit !== 0) {
-        let weightFactor = p.weight;
-        if (catKey === "dirham") {
-          weightFactor = p.weight ? p.weight / 3.11 : 1;
+      let weightFactor = p.weight || 1;
+      if (catKey === "dirham") {
+        weightFactor = p.weight ? p.weight / 3.11 : 1;
+      }
+
+      if (input.mode === "base") {
+        const basePriceNum = parseInt(input.basePrice.replace(/\D/g, "") || "0");
+        if (basePriceNum > 0) {
+          const newPrice = Math.round(basePriceNum * weightFactor);
+          updatedPrices[p.id] = {
+            ...updatedPrices[p.id],
+            retail: String(newPrice)
+          };
         }
+      } else if (input.mode === "delta") {
+        const deltaAmountNum = parseInt(input.deltaAmount.replace(/\D/g, "") || "0");
+        if (deltaAmountNum > 0) {
+          const deltaPerUnit = input.direction === "up" ? deltaAmountNum : -deltaAmountNum;
+          const currentPriceStr = updatedPrices[p.id]?.retail || 
+                                  (item.price?.retail_sell_price ? String(item.price.retail_sell_price) : "0");
+          const currentPriceNum = parseInt(currentPriceStr) || 0;
+          const totalDelta = Math.round(deltaPerUnit * weightFactor);
+          const newPrice = Math.max(0, currentPriceNum + totalDelta);
 
-        const currentPriceStr = updatedPrices[p.id]?.retail || 
-                                (item.price?.retail_sell_price ? String(item.price.retail_sell_price) : "0");
-        const currentPriceNum = parseInt(currentPriceStr) || 0;
-
-        const totalDelta = Math.round(deltaPerUnit * weightFactor);
-        const newPrice = Math.max(0, currentPriceNum + totalDelta);
-
-        updatedPrices[p.id] = {
-          ...updatedPrices[p.id],
-          retail: String(newPrice)
-        };
+          updatedPrices[p.id] = {
+            ...updatedPrices[p.id],
+            retail: String(newPrice)
+          };
+        }
       }
     });
 
