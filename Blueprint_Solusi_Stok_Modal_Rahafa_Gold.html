@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Blueprint Solusi Stok & Modal - Rahafa Gold</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+  
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.5;
+    color: #1e293b;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Header Banner */
+  .header-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    border-left: 6px solid #d97706;
+  }
+  .brand-logo {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fbbf24;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .doc-title {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+  }
+  .doc-subtitle {
+    font-size: 10pt;
+    color: #cbd5e1;
+    margin: 0;
+  }
+  .meta-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 8.5pt;
+    color: #94a3b8;
+  }
+
+  /* Headings */
+  h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 4px;
+    margin-top: 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 14px;
+    background-color: #d97706;
+    margin-right: 8px;
+    border-radius: 2px;
+  }
+  h3 {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-align: justify;
+  }
+
+  /* Cards & Callouts */
+  .card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+  }
+
+  .callout-important {
+    background-color: #fffbeb;
+    border-left: 4px solid #d97706;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  .callout-important .title {
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 4px;
+    font-size: 9pt;
+  }
+
+  .callout-tip {
+    background-color: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  .callout-tip .title {
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 4px;
+    font-size: 9pt;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 8.5pt;
+    page-break-inside: avoid;
+  }
+  th {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 6px 8px;
+    border: 1px solid #0f172a;
+  }
+  td {
+    padding: 6px 8px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-recommended {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+  }
+  .badge-aman {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  .badge-hold {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  /* Steps Grid */
+  .step-container {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  .step-box {
+    flex: 1;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-top: 3px solid #d97706;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 8pt;
+  }
+  .step-num {
+    font-weight: 800;
+    color: #d97706;
+    font-size: 9.5pt;
+    margin-bottom: 4px;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .footer-note {
+    margin-top: 20px;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 7.5pt;
+    color: #64748b;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER BANNER -->
+  <div class="header-banner">
+    <div class="brand-logo">RAHAFA GOLD • EXECUTIVE BLUEPRINT</div>
+    <div class="doc-title">BLUEPRINT SOLUSI: STOK AWAL & MANAJEMEN MODAL</div>
+    <div class="doc-subtitle">Panduan Transisi Sistem Manual ke Sistem Digital Bebas Selisih Stok</div>
+    <div class="meta-grid">
+      <div>Peruntukan: <strong>Owner Rahafa Gold</strong></div>
+      <div>Tanggal: <strong>Agustus 2026</strong></div>
+      <div>Format: <strong>A4 Standard PDF Document</strong></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2>1. Executive Summary & Diagnosa Masalah</h2>
+  <div class="card">
+    <p><strong>Latar Belakang:</strong> Rahafa Gold memiliki stok awal Logam Mulia (LM) dan perhiasan yang terkumpul dari beberapa tahun silam. Karena operasional terdahulu dilakukan secara manual, toko menghadapi 3 kendala utama:</p>
+    <ol style="margin-bottom: 0; padding-left: 18px;">
+      <li><strong>Ketidakpastian Harga Modal Historis:</strong> Owner tidak memiliki catatan harga beli masa lalu dan menganggap <em>stok emas tidak ada harganya sampai ada update harga harian</em>.</li>
+      <li><strong>Keterikatan Penggantian Manual:</strong> Owner menganut prinsip <em>"jika keluar 10 LM modal A, harus beli 10 LM modal A atau lebih murah agar laba/rugi bisa dihitung"</em>.</li>
+      <li><strong>Dampak Operasional:</strong> Karena harga emas fluktuatif, pencatatan manual menimbulkan beban pikiran, perhitungan laba/rugi yang tertunda, serta <strong>selisih stok fisik vs catatan yang terus berulang</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="callout-important">
+    <div class="title">⚠️ MENGAPA CARA MANUAL MEMICU SELISIH STOK?</div>
+    Emas adalah komoditas dengan harga yang berubah setiap hari. Mencoba mencocokkan harga beli masa depan dengan barang yang sudah terjual secara manual tanpa sistem <em>batching</em> digital sangat rentan keliru. Akibatnya, terjadi kerancuan antara <strong>Harga Modal Stok Riil</strong> (uang yang keluar saat membeli) dan <strong>Harga Jual Acuan Harian</strong>.
+  </div>
+
+  <!-- SECTION 2 -->
+  <h2>2. Pergeseran Paradigma (Mindset Shift)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 23%;">Aspek</th>
+        <th style="width: 38%;">Paradigma Lama (Manual)</th>
+        <th style="width: 39%;">Paradigma Baru (Sistem Rahafa Gold)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Modal Stok Awal</strong></td>
+        <td>Mengambang / Dianggap tidak ada harganya sampai ada update harian</td>
+        <td>Dikunci pada tanggal <em>Cut-Off</em> sebagai nilai modal resmi dasar</td>
+      </tr>
+      <tr>
+        <td><strong>Pencatatan Modal</strong></td>
+        <td>Dihitung & diingat-ingat di kepala</td>
+        <td>Dicatat otomatis per <strong>Batch / Lot Masuk</strong> oleh sistem</td>
+      </tr>
+      <tr>
+        <td><strong>Logika Penggantian</strong></td>
+        <td>Mencari emas pengganti dengan modal sama/lebih murah secara manual</td>
+        <td>Sistem memberi rekomendasi visual status <strong>AMAN JUAL</strong> vs <strong>HOLD</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Penhitungan Laba/Rugi</strong></td>
+        <td>Tergantung pembelian barang pengganti di masa depan</td>
+        <td>Dihitung pasti saat transaksi jual (<em>Harga Jual Riil - Modal Batch Riil</em>)</td>
+      </tr>
+      <tr>
+        <td><strong>Pengendalian Stok</strong></td>
+        <td>Sering selisih karena estimasi manual</td>
+        <td>Selalu sinkron 100% karena setiap transaksi langsung memotong batch</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3 -->
+  <h2>3. Solusi Strategis Penentuan Harga Modal Stok Awal (Cut-Off)</h2>
+  <p>Untuk memulai sistem digital Rahafa Gold, kita melakukan <strong>Cut-Off (Titik Start Bersih)</strong> dengan 3 opsi modal dasar:</p>
+
+  <div class="card" style="border-left: 4px solid #16a34a;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <h3 style="margin: 0; color: #166534;">Opsi 1: Revaluasi Modal Berdasarkan "Harga Buyback Hari Cut-Off"</h3>
+      <span class="badge badge-recommended">Sangat Direkomendasikan</span>
+    </div>
+    <p><strong>Mekanisme:</strong> Lakukan Stock Opname fisik pada tanggal yang ditentukan. Semua stok lama di-input dengan modal = <strong>Harga Buyback Pasar pada hari tersebut</strong>.</p>
+    <ul style="margin: 0; padding-left: 18px;">
+      <li><strong>Paling Realistis:</strong> Nilai buyback adalah nilai pencairan riil terendah jika emas dijual ke pasar hari ini.</li>
+      <li><strong>Clean Slate:</strong> Menghapus 100% beban histori masa lalu yang tidak ada nota pencatatannya.</li>
+      <li><strong>Laba Bersih Akurat:</strong> Keuntungan ke depan dihitung murni dari kenaikan di atas harga dasar cut-off.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Opsi 2: Revaluasi Berdasarkan "Harga Pasar / Kulakan Hari Cut-Off"</h3>
+    <p>Menggunakan harga acuan modal supplier pada hari cut-off sebagai titik nol modal stok awal. Meniru seolah-olah toko baru saja membeli seluruh stok tersebut dari supplier pada hari ini.</p>
+  </div>
+
+  <div class="card">
+    <h3>Opsi 3: Fixed Estimated Base Cost (Modal Taksiran Rata-Rata Historis)</h3>
+    <p>Jika owner memiliki estimasi rata-rata pembelian beberapa tahun lalu (misal: Rp900.000/gram), angka ini dipakai sebagai modal dasar awal. Mengakomodasi keinginan owner yang merasa modal lamanya masih jauh di bawah harga emas saat ini.</p>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 4 -->
+  <h2>4. Mekanisme Kerja Sistem Rahafa Gold</h2>
+  <div class="step-container">
+    <div class="step-box">
+      <div class="step-num">1. Otomasi Batch Modal</div>
+      Setiap transaksi emas masuk (stok awal, buyback customer, atau kulakan supplier) otomatis membentuk <strong>Batch/Lot Baru</strong> dengan modal riilnya masing-masing.
+    </div>
+    <div class="step-box">
+      <div class="step-num">2. Matriks Keputusan</div>
+      Sistem membandingkan Harga Jual Hari Ini dengan Modal Batch. Jika Harga Jual &gt; Modal &rarr; <span class="badge badge-aman">AMAN JUAL</span>. Jika sebaliknya &rarr; <span class="badge badge-hold">HOLD / TAHAN</span>.
+    </div>
+    <div class="step-box">
+      <div class="step-num">3. Profit Real-Time</div>
+      Laba bersih dihitung seketika saat invoice dicetak: <br><code>Profit = Harga Jual - Modal Batch</code>. Bebas spekulasi barang pengganti.
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <h2>5. Simulasi Ilustrasi Transaksi Riil</h2>
+  <div class="card">
+    <p style="margin-bottom: 6px;"><strong>Kondisi Awal:</strong> Toko memiliki 10 Pcs LM Antam 1 Gram. Disepakati Modal Cut-Off (Opsi 1) = <strong>Rp1.200.000 / pcs</strong>.</p>
+
+    <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 8px;">
+      <strong>[HARI 1] — Penjualan Stok Awal</strong>
+      <div style="font-size: 8.5pt; color: #475569; margin-top: 2px;">
+        • Stok Awal (Batch 0): 10 Pcs @ Modal Rp1.200.000<br>
+        • Harga Jual Hari Ini: Rp1.300.000 | Transaksi Jual: 3 Pcs<br>
+        • <strong>Profit Terbuka:</strong> 3 pcs x (Rp1.300.000 - Rp1.200.000) = <strong>+Rp300.000</strong> (Sisa Batch 0: 7 Pcs)
+      </div>
+    </div>
+
+    <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 8px;">
+      <strong>[HARI 2] — Buyback Dari Customer</strong>
+      <div style="font-size: 8.5pt; color: #475569; margin-top: 2px;">
+        • Transaksi Buyback: 2 Pcs @ Harga Buyback Rp1.220.000<br>
+        • Otomatis Terbentuk <strong>Batch Buyback-1 (BB1)</strong>: 2 Pcs @ Modal Rp1.220.000<br>
+        • <strong>Total Stok Toko:</strong> 7 Pcs (Batch 0) + 2 Pcs (Batch BB1) = 9 Pcs
+      </div>
+    </div>
+
+    <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
+      <strong>[HARI 3] — Fluktuasi Harga Turun ke Rp1.210.000</strong>
+      <div style="font-size: 8.5pt; color: #475569; margin-top: 2px;">
+        • Cek Rekomendasi Sistem:<br>
+        &nbsp;&nbsp; - Batch 0 (Modal Rp1.200.000) &rarr; <span class="badge badge-aman">AMAN JUAL</span> (Untung Rp10.000/pcs)<br>
+        &nbsp;&nbsp; - Batch BB1 (Modal Rp1.220.000) &rarr; <span class="badge badge-hold">HOLD / TAHAN</span> (Rugi Rp10.000/pcs jika dijual hari ini)
+      </div>
+    </div>
+  </div>
+
+  <div class="callout-tip">
+    <div class="title">💡 KEUNTUNGAN BAGI OWNER</div>
+    Owner dengan cepat mengetahui stok mana yang boleh dikeluarkan hari ini dan mana yang harus ditahan tanpa takut rugi atau bingung mengingat harga pengganti.
+  </div>
+
+  <!-- SECTION 6 -->
+  <h2>6. Roadmap Transisi 3 Langkah</h2>
+  <div style="display: flex; gap: 8px;">
+    <div style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px;">
+      <strong style="color: #0f172a;">Tahap 1: Stock Opname</strong>
+      <p style="font-size: 8pt; margin: 3px 0 0 0; color: #475569;">Menghitung fisik seluruh LM & gramasi di toko secara aktual bersama admin & owner.</p>
+    </div>
+    <div style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px;">
+      <strong style="color: #0f172a;">Tahap 2: Input Stok Awal</strong>
+      <p style="font-size: 8pt; margin: 3px 0 0 0; color: #475569;">Menentukan opsi modal cut-off & meng-input data fisik ke sistem sebagai Batch 0.</p>
+    </div>
+    <div style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px;">
+      <strong style="color: #0f172a;">Tahap 3: Go-Live Digital</strong>
+      <p style="font-size: 8pt; margin: 3px 0 0 0; color: #475569;">Menghentikan catatan manual. 100% transaksi jual/buyback via aplikasi Rahafa Gold.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-note">
+    Dokumen ini disusun khusus untuk Konsultasi Sistem Aplikasi Rahafa Gold • Ukuran Cetak: A4 Standard Legible PDF
+  </div>
+
+</body>
+</html>
