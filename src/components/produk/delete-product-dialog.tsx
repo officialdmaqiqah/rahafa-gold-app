@@ -67,25 +67,21 @@ export function DeleteProductDialog({ product }: DeleteProductDialogProps) {
       } />
       
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 shrink-0">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div>
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
-                Hapus Produk
-              </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500 mt-1">
-                Apakah Anda yakin ingin menghapus produk ini?
-              </DialogDescription>
-            </div>
+        <DialogHeader className="flex flex-col items-center text-center">
+          <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 mb-1">
+            <AlertTriangle className="h-6 w-6" />
           </div>
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+            Hapus Produk
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500 mt-0.5">
+            Apakah Anda yakin ingin menghapus produk ini?
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="py-3 px-1 space-y-3">
-          <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-sm space-y-1">
-            <div className="font-semibold text-slate-900 dark:text-slate-100">
+        <div className="px-6 py-2 space-y-3">
+          <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 text-sm space-y-1">
+            <div className="font-bold text-slate-900 dark:text-slate-100">
               {product.name}
             </div>
             <div className="text-xs text-slate-500 font-mono">
@@ -93,7 +89,7 @@ export function DeleteProductDialog({ product }: DeleteProductDialogProps) {
             </div>
           </div>
 
-          <p className="text-xs text-slate-500 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed px-0.5">
             Jika produk sudah memiliki riwayat transaksi/stok, sistem akan otomatis menonaktifkan status produk (Soft Delete) agar laporan riwayat keuangan tetap terjaga.
           </p>
 
