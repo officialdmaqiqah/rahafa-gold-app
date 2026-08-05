@@ -1,12 +1,12 @@
 import { getProducts } from "./actions";
 import { ProductFormDialog } from "@/components/produk/product-form-dialog";
+import { DeleteProductDialog } from "@/components/produk/delete-product-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { redirect } from "next/navigation";
 
 export default async function ProductPage({
   searchParams,
@@ -19,9 +19,6 @@ export default async function ProductPage({
   const type = typeof resolvedParams.type === 'string' ? resolvedParams.type : 'all';
 
   const products = await getProducts(search, category, type);
-
-  // Get unique types for filter
-  const types = Array.from(new Set(products.map(p => p.type).filter(Boolean)));
 
   return (
     <div className="p-4 md:p-8 space-y-6">
@@ -109,7 +106,10 @@ export default async function ProductPage({
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <ProductFormDialog product={product} />
+                    <div className="flex items-center justify-end gap-1">
+                      <ProductFormDialog product={product} />
+                      <DeleteProductDialog product={product} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -120,3 +120,4 @@ export default async function ProductPage({
     </div>
   );
 }
+

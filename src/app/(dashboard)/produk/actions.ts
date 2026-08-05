@@ -102,3 +102,56 @@ export async function toggleProductStatus(id: string, currentStatus: boolean) {
   revalidatePath("/produk");
   return { success: true };
 }
+
+export async function deleteProduct(id: string) {
+  try {
+    // Check for stock batches or transaction items
+    const { data: batches } = await supabase
+      .from("stock_batches")
+      .select("id")
+      .eq("product_id", id);
+
+    const { data: txItems } = await supabase
+      .from("transaction_items")
+      .select("id")
+      .eq("product_id", id);
+
+    if ((batches && batches.length > 0) || (txItems && txItems.length > 0)) {
+      // Product has history -> soft delete (is_active = false)
+      const { error } = await supabase
+        .from("products")
+        .update({ is_active: false })
+        .eq("id", id);
+
+      if (error) {
+        return { error: `Gagal menonaktifkan produk: ${error.message}` };
+      }
+
+      revalidatePath("/produk");
+      return { 
+        success: true, 
+        wasSoftDeleted: true, 
+        message: "Produk memiliki riwayat transaksi/stok, sehingga dinonaktifkan." 
+      };
+    }
+
+    // Delete draft daily_prices first
+    await supabase.from("daily_prices").delete().eq("product_id", id);
+
+    // Hard delete product
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return { error: `Gagal menghapus produk: ${error.message}` };
+    }
+
+    revalidatePath("/produk");
+    return { success: true, message: "Produk berhasil dihapus permanen." };
+  } catch (err: any) {
+    return { error: `Terjadi kesalahan: ${err.message}` };
+  }
+}
+
