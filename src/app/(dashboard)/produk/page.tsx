@@ -1,6 +1,6 @@
 import { getProducts } from "./actions";
 import { ProductFormDialog } from "@/components/produk/product-form-dialog";
-import { DeleteProductDialog } from "@/components/produk/delete-product-dialog";
+import { DeactivateProductDialog } from "@/components/produk/deactivate-product-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -108,7 +108,7 @@ export default async function ProductPage({
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <ProductFormDialog product={product} />
-                      <DeleteProductDialog product={product} />
+                      <DeactivateProductDialog product={product} />
                     </div>
                   </TableCell>
                 </TableRow>
