@@ -102,7 +102,7 @@ export function DeactivateProductDialog({ product }: DeactivateProductDialogProp
               {product.name}
             </div>
             <div className="text-xs text-slate-500 font-mono">
-              Kode Barang: {product.item_code} | Kode Sistem: {product.system_code}
+              Kode Barang: {product.item_code}
             </div>
           </div>
 

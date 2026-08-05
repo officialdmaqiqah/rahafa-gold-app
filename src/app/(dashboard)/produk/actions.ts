@@ -40,7 +40,8 @@ export async function upsertProduct(prevState: any, formData: FormData) {
   try {
     const id = formData.get("id") as string | null;
     const itemCode = formData.get("item_code") as string;
-    const systemCode = formData.get("system_code") as string;
+    const systemCodeRaw = formData.get("system_code") as string | null;
+    const systemCode = systemCodeRaw || itemCode;
     const name = toTitleCase(formData.get("name") as string);
     const category = formData.get("category") as string;
     const type = toTitleCase(formData.get("type") as string);
@@ -77,7 +78,7 @@ export async function upsertProduct(prevState: any, formData: FormData) {
 
     if (error) {
       if (error.code === '23505') { // Unique violation
-        return { error: "Kode Barang atau Kode Sistem sudah digunakan." };
+        return { error: "Kode Barang sudah digunakan." };
       }
       return { error: `Gagal menyimpan produk: ${error.message}` };
     }

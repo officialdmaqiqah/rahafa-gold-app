@@ -86,9 +86,8 @@ export default async function ProductPage({
             ) : (
               products.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                     {product.item_code}
-                    <div className="text-xs text-muted-foreground">{product.system_code}</div>
                   </TableCell>
                   <TableCell className="capitalize">{product.name.toLowerCase()}</TableCell>
                   <TableCell>

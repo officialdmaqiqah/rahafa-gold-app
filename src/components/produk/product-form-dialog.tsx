@@ -53,7 +53,7 @@ export function ProductFormDialog({ product }: { product?: any }) {
         <DialogHeader>
           <DialogTitle>{product ? "Edit Produk" : "Tambah Produk"}</DialogTitle>
           <DialogDescription>
-            Masukkan informasi detail produk. Kode sistem digunakan untuk barcode/import.
+            Masukkan informasi detail produk Anda.
           </DialogDescription>
         </DialogHeader>
         <form action={formAction}>
@@ -67,18 +67,11 @@ export function ProductFormDialog({ product }: { product?: any }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-6 py-4">
             
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="item_code">
                 Kode Barang
               </Label>
-              <Input id="item_code" name="item_code" defaultValue={product?.item_code} required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="system_code">
-                Kode Sistem
-              </Label>
-              <Input id="system_code" name="system_code" defaultValue={product?.system_code} required />
+              <Input id="item_code" name="item_code" defaultValue={product?.item_code} placeholder="Contoh: SA0005, A001, RG0025..." required />
             </div>
 
             <div className="space-y-2 sm:col-span-2">
