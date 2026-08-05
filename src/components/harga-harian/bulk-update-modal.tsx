@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Zap, TrendingUp, TrendingDown, RefreshCw, CheckCircle2, SlidersHorizontal, Calculator } from "lucide-react";
+import { Zap, TrendingUp, TrendingDown, RefreshCw, CheckCircle2, ChevronDown, ChevronUp, PackageCheck } from "lucide-react";
 import { CATEGORIES_CONFIG, CategoryKey, matchProductCategory } from "@/lib/product-categories";
 
 interface BulkUpdateModalProps {
@@ -34,7 +34,17 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
     perak: { mode: "delta", direction: "up", deltaAmount: "", basePrice: "" }
   });
 
-  // Group items by category for count & benchmark price lookup
+  // Track expanded state for product lists inside category cards
+  const [expandedCategories, setExpandedCategories] = useState<Record<CategoryKey, boolean>>({
+    antam_certicard: false,
+    antam_retro: false,
+    minigold: false,
+    microgold: false,
+    dirham: false,
+    perak: false
+  });
+
+  // Group items by category for count, list, & benchmark price lookup
   const groupedProducts = useMemo(() => {
     const map: Record<CategoryKey, any[]> = {
       antam_certicard: [],
@@ -50,6 +60,11 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
       if (catKey) {
         map[catKey].push(item);
       }
+    });
+
+    // Sort products by weight within each category
+    Object.keys(map).forEach(key => {
+      map[key as CategoryKey].sort((a, b) => (a.product.weight || 0) - (b.product.weight || 0));
     });
 
     return map;
@@ -69,11 +84,46 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
     }));
   };
 
+  const toggleCategoryExpand = (key: CategoryKey) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   const formatRupiah = (val: string | number) => {
     if (!val && val !== 0) return "";
     const num = typeof val === "number" ? val : parseInt(String(val).replace(/\D/g, "") || "0");
     if (isNaN(num)) return "";
     return new Intl.NumberFormat("id-ID").format(num);
+  };
+
+  const calculateDeltaForCategory = (catKey: CategoryKey): number => {
+    const input = categoryInputs[catKey];
+    if (input.mode === "delta") {
+      const amount = parseInt(input.deltaAmount.replace(/\D/g, "") || "0");
+      if (amount > 0) {
+        return input.direction === "up" ? amount : -amount;
+      }
+    } else if (input.mode === "base") {
+      const newBase = parseInt(input.basePrice.replace(/\D/g, "") || "0");
+      if (newBase > 0) {
+        const categoryItems = groupedProducts[catKey];
+        const benchmarkItem = categoryItems.find(i => 
+          catKey === "dirham" ? (i.product.weight === 3.11 || i.product.name.includes("1 DIRHAM")) : (i.product.weight === 1)
+        ) || categoryItems[0];
+
+        if (benchmarkItem) {
+          const currentRetailStr = currentPrices[benchmarkItem.product.id]?.retail || 
+                                 (benchmarkItem.price?.retail_sell_price ? String(benchmarkItem.price.retail_sell_price) : "0");
+          const currentBase = parseInt(currentRetailStr) || 0;
+          if (currentBase > 0) {
+            return newBase - currentBase;
+          }
+        }
+      }
+    }
+    return 0;
   };
 
   const handleReset = () => {
@@ -95,39 +145,11 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
       const catKey = matchProductCategory(p);
       if (!catKey) return;
 
-      const input = categoryInputs[catKey];
-      let deltaPerUnit = 0;
-
-      if (input.mode === "delta") {
-        const amount = parseInt(input.deltaAmount.replace(/\D/g, "") || "0");
-        if (amount > 0) {
-          deltaPerUnit = input.direction === "up" ? amount : -amount;
-        }
-      } else if (input.mode === "base") {
-        const newBase = parseInt(input.basePrice.replace(/\D/g, "") || "0");
-        if (newBase > 0) {
-          // Find benchmark product for this category (weight = 1 or 1 dirham)
-          const categoryItems = groupedProducts[catKey];
-          const benchmarkItem = categoryItems.find(i => 
-            catKey === "dirham" ? (i.product.weight === 3.11 || i.product.name.includes("1 DIRHAM")) : (i.product.weight === 1)
-          ) || categoryItems[0];
-
-          if (benchmarkItem) {
-            const currentRetailStr = updatedPrices[benchmarkItem.product.id]?.retail || 
-                                   (benchmarkItem.price?.retail_sell_price ? String(benchmarkItem.price.retail_sell_price) : "0");
-            const currentBase = parseInt(currentRetailStr) || 0;
-            if (currentBase > 0) {
-              deltaPerUnit = newBase - currentBase;
-            }
-          }
-        }
-      }
+      const deltaPerUnit = calculateDeltaForCategory(catKey);
 
       if (deltaPerUnit !== 0) {
-        // Calculate weight multiplier
         let weightFactor = p.weight;
         if (catKey === "dirham") {
-          // For dirham, 3.11g is 1 dirham unit factor
           weightFactor = p.weight ? p.weight / 3.11 : 1;
         }
 
@@ -163,7 +185,7 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
                 Update Harga Massal (6 Kategori)
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm mt-0.5 text-slate-500">
-                Masukkan selisih perubahan (+/-) atau harga acuan baru. Seluruh varian produk di kategori tersebut akan disesuaikan.
+                Masukkan nilai perubahan untuk kategori. Anggota produk & varian berat akan dihitung otomatis.
               </DialogDescription>
             </div>
           </div>
@@ -175,6 +197,8 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
             {CATEGORIES_CONFIG.map((config) => {
               const catItems = groupedProducts[config.key] || [];
               const input = categoryInputs[config.key];
+              const isExpanded = expandedCategories[config.key];
+              const deltaPerUnit = calculateDeltaForCategory(config.key);
               
               // Find sample 1g / 1 dirham benchmark price
               const benchmarkItem = catItems.find(i => 
@@ -187,109 +211,180 @@ export function BulkUpdateModal({ isOpen, onClose, data, currentPrices, onApply 
               return (
                 <div 
                   key={config.key} 
-                  className="border rounded-xl p-4 bg-white dark:bg-slate-950 shadow-sm hover:shadow-md transition-all space-y-3 border-slate-200 dark:border-slate-800"
+                  className="border rounded-xl p-4 bg-white dark:bg-slate-950 shadow-sm hover:shadow-md transition-all space-y-3 border-slate-200 dark:border-slate-800 flex flex-col justify-between"
                 >
-                  {/* Category Header */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2.5 border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`${config.badgeColor} font-bold px-2.5 py-0.5 text-xs`}>
-                        {config.label}
-                      </Badge>
-                      <span className="text-xs font-medium text-slate-500">({catItems.length} produk)</span>
-                    </div>
-                    {benchmarkItem && (
-                      <span className="text-xs text-slate-500 font-medium">
-                        Saat ini: <strong className="text-slate-800 dark:text-slate-200">Rp {benchmarkPrice}</strong> /{config.key === "dirham" ? "dirham" : "gr"}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Mode Selector (Subtle Pill Segmented Control) */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
-                      <span>Pilih Metode Input</span>
-                      <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
-                        <button
-                          type="button"
-                          onClick={() => handleInputChange(config.key, "mode", "delta")}
-                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                            input.mode === "delta" 
-                              ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" 
-                              : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                          }`}
-                        >
-                          Selisih (+/-)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInputChange(config.key, "mode", "base")}
-                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                            input.mode === "base" 
-                              ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" 
-                              : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                          }`}
-                        >
-                          Harga Acuan Baru
-                        </button>
+                  <div className="space-y-3">
+                    {/* Category Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2.5 border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={`${config.badgeColor} font-bold px-2.5 py-0.5 text-xs`}>
+                          {config.label}
+                        </Badge>
+                        <span className="text-xs font-semibold text-slate-500">({catItems.length} Produk)</span>
                       </div>
+                      {benchmarkItem && (
+                        <span className="text-xs text-slate-500 font-medium">
+                          Saat ini: <strong className="text-slate-800 dark:text-slate-200">Rp {benchmarkPrice}</strong> /{config.key === "dirham" ? "dirham" : "gr"}
+                        </span>
+                      )}
                     </div>
 
-                    {input.mode === "delta" ? (
-                      <div className="flex gap-2 items-center">
-                        {/* Direction Toggle: Up (+) or Down (-) */}
-                        <div className="flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-900 shrink-0">
+                    {/* Mode Selector (Subtle Pill Segmented Control) */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        <span>Metode Input</span>
+                        <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
                           <button
                             type="button"
-                            onClick={() => handleInputChange(config.key, "direction", "up")}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all ${
-                              input.direction === "up" 
-                                ? "bg-emerald-600 text-white shadow" 
-                                : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                            onClick={() => handleInputChange(config.key, "mode", "delta")}
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                              input.mode === "delta" 
+                                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" 
+                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                             }`}
                           >
-                            <TrendingUp className="h-3.5 w-3.5" /> Naik (+)
+                            Selisih (+/-)
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleInputChange(config.key, "direction", "down")}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all ${
-                              input.direction === "down" 
-                                ? "bg-rose-600 text-white shadow" 
-                                : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                            onClick={() => handleInputChange(config.key, "mode", "base")}
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                              input.mode === "base" 
+                                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm" 
+                                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                             }`}
                           >
-                            <TrendingDown className="h-3.5 w-3.5" /> Turun (-)
+                            Harga Acuan Baru
                           </button>
                         </div>
+                      </div>
 
-                        {/* Delta Amount Input */}
-                        <div className="relative flex-1 min-w-[100px]">
-                          <span className="absolute left-2.5 top-2.5 text-xs font-medium text-slate-400">Rp</span>
+                      {input.mode === "delta" ? (
+                        <div className="flex gap-2 items-center">
+                          {/* Direction Toggle: Up (+) or Down (-) */}
+                          <div className="flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-900 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange(config.key, "direction", "up")}
+                              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all ${
+                                input.direction === "up" 
+                                  ? "bg-emerald-600 text-white shadow" 
+                                  : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                              }`}
+                            >
+                              <TrendingUp className="h-3.5 w-3.5" /> Naik (+)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange(config.key, "direction", "down")}
+                              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all ${
+                                input.direction === "down" 
+                                  ? "bg-rose-600 text-white shadow" 
+                                  : "text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                              }`}
+                            >
+                              <TrendingDown className="h-3.5 w-3.5" /> Turun (-)
+                            </button>
+                          </div>
+
+                          {/* Delta Amount Input */}
+                          <div className="relative flex-1 min-w-[100px]">
+                            <span className="absolute left-2.5 top-2.5 text-xs font-medium text-slate-400">Rp</span>
+                            <Input
+                              placeholder={`0 (${config.unitLabel})`}
+                              className="pl-7 text-right font-bold h-9 text-sm border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#294376]"
+                              value={formatRupiah(input.deltaAmount)}
+                              onChange={(e) => {
+                                const clean = e.target.value.replace(/\D/g, "");
+                                handleInputChange(config.key, "deltaAmount", clean);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-xs font-medium text-slate-400">Rp</span>
                           <Input
-                            placeholder={`0 (${config.unitLabel})`}
-                            className="pl-7 text-right font-bold h-9 text-sm border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#294376]"
-                            value={formatRupiah(input.deltaAmount)}
+                            placeholder={`Harga Baru 1 ${config.key === "dirham" ? "Dirham" : "Gram"}`}
+                            className="pl-8 text-right font-bold h-9 text-sm border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#294376]"
+                            value={formatRupiah(input.basePrice)}
                             onChange={(e) => {
                               const clean = e.target.value.replace(/\D/g, "");
-                              handleInputChange(config.key, "deltaAmount", clean);
+                              handleInputChange(config.key, "basePrice", clean);
                             }}
                           />
                         </div>
+                      )}
+                    </div>
+
+                    {/* Member Products Summary / Badge Chips */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                          <PackageCheck className="h-3.5 w-3.5 text-slate-400" />
+                          Anggota Produk ({catItems.length}):
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleCategoryExpand(config.key)}
+                          className="text-[11px] font-semibold text-[#294376] hover:underline dark:text-blue-400 flex items-center gap-0.5"
+                        >
+                          {isExpanded ? "Sembunyikan Simulasi" : "Lihat Detail Simulasi"}
+                          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        </button>
                       </div>
-                    ) : (
-                      <div className="relative">
-                        <span className="absolute left-3 top-2.5 text-xs font-medium text-slate-400">Rp</span>
-                        <Input
-                          placeholder={`Harga Baru 1 ${config.key === "dirham" ? "Dirham" : "Gram"}`}
-                          className="pl-8 text-right font-bold h-9 text-sm border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#294376]"
-                          value={formatRupiah(input.basePrice)}
-                          onChange={(e) => {
-                            const clean = e.target.value.replace(/\D/g, "");
-                            handleInputChange(config.key, "basePrice", clean);
-                          }}
-                        />
-                      </div>
-                    )}
+
+                      {/* Default Compact Chips view */}
+                      {!isExpanded && (
+                        <div className="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto pr-1">
+                          {catItems.map((item) => {
+                            const p = item.product;
+                            return (
+                              <span 
+                                key={p.id} 
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60"
+                              >
+                                {p.name} <span className="text-slate-400 font-semibold">({p.weight} {p.unit})</span>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Expanded View with Live Price Simulation */}
+                      {isExpanded && (
+                        <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                          {catItems.map((item) => {
+                            const p = item.product;
+                            const currentPriceStr = currentPrices[p.id]?.retail || 
+                                                    (item.price?.retail_sell_price ? String(item.price.retail_sell_price) : "0");
+                            const currentNum = parseInt(currentPriceStr) || 0;
+                            
+                            let weightFactor = p.weight;
+                            if (config.key === "dirham") {
+                              weightFactor = p.weight ? p.weight / 3.11 : 1;
+                            }
+
+                            const totalDelta = Math.round(deltaPerUnit * weightFactor);
+                            const simulatedPrice = Math.max(0, currentNum + totalDelta);
+
+                            return (
+                              <div key={p.id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                                <span className="font-medium text-slate-700 dark:text-slate-200 truncate max-w-[200px]" title={p.name}>
+                                  {p.name} <span className="text-slate-400 font-normal">({p.weight} {p.unit})</span>
+                                </span>
+                                <div className="flex items-center gap-2 font-mono text-[11px]">
+                                  <span className="text-slate-400 line-through">Rp {formatRupiah(currentNum)}</span>
+                                  <span className={`font-bold ${totalDelta > 0 ? "text-emerald-600 dark:text-emerald-400" : totalDelta < 0 ? "text-rose-600 dark:text-rose-400" : "text-slate-800 dark:text-slate-200"}`}>
+                                    Rp {formatRupiah(simulatedPrice)}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
