@@ -6,26 +6,35 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const { data: transaction, error: tErr } = await supabase
-    .from("transactions")
-    .select(`
-      *,
-      customer:customers(name, phone, address, customer_type)
-    `)
-    .eq("id", id)
-    .single();
+  const [
+    { data: transaction, error: tErr },
+    { data: items, error: iErr },
+    { data: settingsData }
+  ] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select(`
+        *,
+        customer:customers(name, phone, address, customer_type)
+      `)
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("transaction_items")
+      .select(`
+        *,
+        product:products(name, item_code, weight, unit, type, category)
+      `)
+      .eq("transaction_id", id),
+    supabase
+      .from("settings")
+      .select("*")
+      .limit(1)
+  ]);
 
   if (tErr || !transaction) {
     return notFound();
   }
-
-  const { data: items, error: iErr } = await supabase
-    .from("transaction_items")
-    .select(`
-      *,
-      product:products(name, item_code, weight, unit, type, category)
-    `)
-    .eq("transaction_id", id);
 
   if (iErr) {
     console.error("Error fetching items:", iErr);
@@ -44,8 +53,6 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   });
 
   const aggregatedItems = Array.from(aggregatedItemsMap.values());
-
-  const { data: settingsData } = await supabase.from("settings").select("*").limit(1);
   const settings = settingsData && settingsData.length > 0 ? settingsData[0] : null;
 
   return (

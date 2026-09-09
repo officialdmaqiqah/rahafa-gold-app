@@ -94,17 +94,20 @@ async function simulateAllocation(productId: string, requestedQty: number, sellP
 export async function validateCart(cartItems: any[]) {
   let hasMinus = false;
   let hasInsufficientStock = false;
-  const validations = [];
 
-  for (const item of cartItems) {
-    const alloc = await simulateAllocation(item.productId, item.qty, item.unitPrice);
-    if (alloc.remainingQty > 0) hasInsufficientStock = true;
-    if (alloc.isMinus) hasMinus = true;
-    
-    validations.push({
-      productId: item.productId,
-      ...alloc
-    });
+  const validations = await Promise.all(
+    cartItems.map(async (item) => {
+      const alloc = await simulateAllocation(item.productId, item.qty, item.unitPrice);
+      return {
+        productId: item.productId,
+        ...alloc
+      };
+    })
+  );
+
+  for (const val of validations) {
+    if (val.remainingQty > 0) hasInsufficientStock = true;
+    if (val.isMinus) hasMinus = true;
   }
 
   return {

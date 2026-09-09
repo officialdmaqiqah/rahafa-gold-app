@@ -18,41 +18,46 @@ export async function getStockData(search?: string, category?: string) {
     pQuery = pQuery.or(`item_code.ilike.%${search}%,name.ilike.%${search}%,type.ilike.%${search}%`);
   }
 
-  const { data: products, error: pErr } = await pQuery;
-  if (pErr) throw new Error(pErr.message);
-
-  // Get active today price
   const today = new Date().toLocaleDateString('en-CA');
-  const { data: prices, error: prErr } = await supabase
-    .from("daily_prices")
-    .select("*")
-    .eq("status", "active")
-    .eq("date", today);
 
+  const [
+    { data: products, error: pErr },
+    { data: prices, error: prErr },
+    { data: batches, error: bErr },
+    { data: settings }
+  ] = await Promise.all([
+    pQuery,
+    supabase
+      .from("daily_prices")
+      .select("*")
+      .eq("status", "active")
+      .eq("date", today),
+    supabase
+      .from("stock_batches")
+      .select("*")
+      .in("status", ["ready", "hold"])
+      .gt("quantity_remaining", 0),
+    supabase
+      .from("settings")
+      .select("minimum_margin_amount, minimum_margin_percent")
+      .limit(1)
+  ]);
+
+  if (pErr) throw new Error(pErr.message);
   if (prErr) throw new Error(prErr.message);
+  if (bErr) throw new Error(bErr.message);
   
   const priceMap = new Map();
-  prices.forEach(p => priceMap.set(p.product_id, p));
-
-  // Get stock batches that are not sold out or cancelled
-  const { data: batches, error: bErr } = await supabase
-    .from("stock_batches")
-    .select("*")
-    .in("status", ["ready", "hold"])
-    .gt("quantity_remaining", 0);
-
-  if (bErr) throw new Error(bErr.message);
+  prices?.forEach(p => priceMap.set(p.product_id, p));
 
   const batchMap = new Map();
-  batches.forEach(b => {
+  batches?.forEach(b => {
     if (!batchMap.has(b.product_id)) {
       batchMap.set(b.product_id, []);
     }
     batchMap.get(b.product_id).push(b);
   });
 
-  // Get settings for minimum margin
-  const { data: settings } = await supabase.from("settings").select("minimum_margin_amount, minimum_margin_percent").limit(1);
   const minMarginAmount = settings && settings.length > 0 ? (settings[0].minimum_margin_amount || 0) : 0;
   const minMarginPercent = settings && settings.length > 0 ? (settings[0].minimum_margin_percent || 0) : 0;
 

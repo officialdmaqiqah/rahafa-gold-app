@@ -14,12 +14,76 @@ export async function getDashboardData() {
   d.setDate(d.getDate() - 7);
   const sevenDaysAgo = d.toLocaleDateString('en-CA');
 
-  // 1. Transactions Today
-  const { data: todayTransactions } = await supabase
+  // Parallelize all independent database queries
+  const todayTransactionsPromise = supabase
     .from("transactions")
     .select("transaction_type, total_amount, remaining_amount, id")
     .eq("transaction_date", today)
     .neq("status", "cancelled");
+
+  const todayItemsPromise = role !== "kasir"
+    ? supabase
+        .from("transaction_items")
+        .select("profit, transactions!inner(transaction_date, status)")
+        .eq("transactions.transaction_date", today)
+        .neq("transactions.status", "cancelled")
+    : Promise.resolve({ data: null });
+
+  const receivablesPromise = supabase
+    .from("transactions")
+    .select("remaining_amount")
+    .gt("remaining_amount", 0)
+    .neq("status", "cancelled");
+
+  const recentTransactionsPromise = supabase
+    .from("transactions")
+    .select("*, customers(name)")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  const weeklyItemsPromise = supabase
+    .from("transaction_items")
+    .select("quantity, products(name), transactions!inner(transaction_date, status)")
+    .gte("transactions.transaction_date", sevenDaysAgo)
+    .neq("transactions.status", "cancelled");
+
+  const stockBatchesPromise = supabase
+    .from("stock_batches")
+    .select("quantity_remaining, cost_price, products!inner(id, name, is_active)")
+    .gt("quantity_remaining", 0)
+    .eq("status", "ready")
+    .eq("products.is_active", true);
+
+  const todayPricesPromise = supabase
+    .from("daily_prices")
+    .select("product_id, retail_sell_price")
+    .eq("status", "active")
+    .eq("date", today);
+
+  const settingsPromise = supabase
+    .from("settings")
+    .select("minimum_margin_amount, minimum_margin_percent")
+    .limit(1);
+
+  const [
+    { data: todayTransactions },
+    { data: todayItems },
+    { data: receivablesData },
+    { data: recentTransactions },
+    { data: weeklyItems },
+    { data: stockBatches },
+    { data: todayPrices },
+    { data: settingsData }
+  ] = await Promise.all([
+    todayTransactionsPromise,
+    todayItemsPromise,
+    receivablesPromise,
+    recentTransactionsPromise,
+    weeklyItemsPromise,
+    stockBatchesPromise,
+    todayPricesPromise,
+    settingsPromise
+  ]);
 
   let salesGeneralToday = 0;
   let salesResellerToday = 0;
@@ -37,43 +101,14 @@ export async function getDashboardData() {
 
   // 2. Estimated Profit Today
   let estimatedProfitToday = 0;
-  if (role !== "kasir") {
-    // Only fetch profit if not kasir
-    // We get transaction_items joined with transactions where date is today
-    const { data: todayItems } = await supabase
-      .from("transaction_items")
-      .select("profit, transactions!inner(transaction_date, status)")
-      .eq("transactions.transaction_date", today)
-      .neq("transactions.status", "cancelled");
-      
-    if (todayItems) {
-      estimatedProfitToday = todayItems.reduce((acc: number, item: any) => acc + (item.profit || 0), 0);
-    }
+  if (role !== "kasir" && todayItems) {
+    estimatedProfitToday = todayItems.reduce((acc: number, item: any) => acc + (item.profit || 0), 0);
   }
 
   // 3. Receivables (Piutang)
-  const { data: receivablesData } = await supabase
-    .from("transactions")
-    .select("remaining_amount")
-    .gt("remaining_amount", 0)
-    .neq("status", "cancelled");
-    
   const totalReceivables = receivablesData?.reduce((acc: number, t: any) => acc + (t.remaining_amount || 0), 0) || 0;
 
-  // 4. Recent Transactions (Top 5)
-  const { data: recentTransactions } = await supabase
-    .from("transactions")
-    .select("*, customers(name)")
-    .order("created_at", { ascending: false })
-    .limit(5);
-
-  // 5. Most sold products this week
-  const { data: weeklyItems } = await supabase
-    .from("transaction_items")
-    .select("quantity, products(name), transactions!inner(transaction_date, status)")
-    .gte("transactions.transaction_date", sevenDaysAgo)
-    .neq("transactions.status", "cancelled");
-
+  // 4. Most sold products this week
   const productCounts: Record<string, number> = {};
   if (weeklyItems) {
     weeklyItems.forEach((item: any) => {
@@ -88,27 +123,12 @@ export async function getDashboardData() {
     .sort((a, b) => b.qty - a.qty)
     .slice(0, 5);
 
-  // 6. Hold Stock Calculation (Only if role allows, or maybe kasir should know to hold?)
-  // Kasir should probably know if they need to hold, but we can just show the count.
-  const { data: stockBatches } = await supabase
-    .from("stock_batches")
-    .select("quantity_remaining, cost_price, products!inner(id, name, is_active)")
-    .gt("quantity_remaining", 0)
-    .eq("status", "ready")
-    .eq("products.is_active", true);
-
-  const { data: todayPrices } = await supabase
-    .from("daily_prices")
-    .select("product_id, retail_sell_price")
-    .eq("status", "active")
-    .eq("date", today);
-    
+  // 5. Hold Stock Calculation
   const priceMap = new Map();
   if (todayPrices) {
     todayPrices.forEach((p: any) => priceMap.set(p.product_id, p.retail_sell_price));
   }
 
-  const { data: settingsData } = await supabase.from("settings").select("minimum_margin_amount, minimum_margin_percent").limit(1);
   const minMarginAmount = settingsData && settingsData.length > 0 ? (settingsData[0].minimum_margin_amount || 0) : 0;
   const minMarginPercent = settingsData && settingsData.length > 0 ? (settingsData[0].minimum_margin_percent || 0) : 0;
 

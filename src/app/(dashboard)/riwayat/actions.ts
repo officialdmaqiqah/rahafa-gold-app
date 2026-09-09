@@ -4,49 +4,50 @@ import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 
 export async function getTransactionHistory(limit = 100) {
-  // 1. Ambil data Transaksi (Penjualan & Buyback)
-  const { data: transactions, error: trxErr } = await supabase
-    .from("transactions")
-    .select(`
-      id,
-      transaction_number,
-      transaction_type,
-      transaction_date,
-      total_amount,
-      status,
-      created_at,
-      customers (name),
-      transaction_items (
-        quantity,
-        unit_price,
+  // 1. Ambil data Transaksi & Barang Masuk secara paralel
+  const [
+    { data: transactions, error: trxErr },
+    { data: stockIns, error: stockErr }
+  ] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select(`
+        id,
+        transaction_number,
+        transaction_type,
+        transaction_date,
+        total_amount,
+        status,
+        created_at,
+        customers (name),
+        transaction_items (
+          quantity,
+          unit_price,
+          products (name)
+        )
+      `)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("stock_batches")
+      .select(`
+        id,
+        date_in,
+        source_type,
+        quantity_in,
+        quantity_remaining,
+        cost_price,
+        supplier_name,
+        status,
+        created_at,
         products (name)
-      )
-    `)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+      `)
+      .in("source_type", ["supplier", "initial"])
+      .order("created_at", { ascending: false })
+      .limit(limit)
+  ]);
 
   if (trxErr) throw new Error(trxErr.message);
-
-  // 2. Ambil data Barang Masuk (dari stock_batches yang bukan buyback)
-  // Karena buyback sudah masuk ke tabel transactions
-  const { data: stockIns, error: stockErr } = await supabase
-    .from("stock_batches")
-    .select(`
-      id,
-      date_in,
-      source_type,
-      quantity_in,
-      quantity_remaining,
-      cost_price,
-      supplier_name,
-      status,
-      created_at,
-      products (name)
-    `)
-    .in("source_type", ["supplier", "initial"])
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
   if (stockErr) throw new Error(stockErr.message);
 
   // 3. Gabungkan dan Format Data

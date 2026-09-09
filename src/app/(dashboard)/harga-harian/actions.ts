@@ -4,21 +4,24 @@ import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 
 export async function getDailyPrices(date: string) {
-  // Get all active products
-  const { data: products, error: pError } = await supabase
-    .from("products")
-    .select("*")
-    .eq("is_active", true)
-    .order("item_code", { ascending: true });
+  // Get all active products and daily prices in parallel
+  const [
+    { data: products, error: pError },
+    { data: prices, error: prError }
+  ] = await Promise.all([
+    supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("item_code", { ascending: true }),
+    supabase
+      .from("daily_prices")
+      .select("*")
+      .eq("date", date)
+      .order("created_at", { ascending: false })
+  ]);
 
   if (pError) throw new Error(pError.message);
-
-  const { data: prices, error: prError } = await supabase
-    .from("daily_prices")
-    .select("*")
-    .eq("date", date)
-    .order("created_at", { ascending: false });
-
   if (prError) throw new Error(prError.message);
 
   let targetSessionName: string | null = null;
