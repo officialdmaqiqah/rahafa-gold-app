@@ -50,11 +50,11 @@ export const CATEGORIES_CONFIG: CategoryInfo[] = [
   },
   {
     key: "dirham",
-    label: "Dirham",
+    label: "Dirham & Rupiya",
     unitLabel: "per 1 Dirham",
     badgeColor: "bg-slate-100 text-slate-900 border-slate-300 dark:bg-slate-800 dark:text-slate-200",
     iconType: "silver",
-    description: "Varian Dirham ABA (1 Dirham & 5 Dirham)"
+    description: "Varian Dirham ABA & Rupiya (1 Dirham/Rupiya = 3.11g)"
   },
   {
     key: "perak",
@@ -69,11 +69,6 @@ export const CATEGORIES_CONFIG: CategoryInfo[] = [
 export function matchProductCategory(product: { name: string; type?: string | null; category: string }): CategoryKey | null {
   const typeUpper = (product.type || "").toUpperCase().trim();
   const nameUpper = (product.name || "").toUpperCase().trim();
-
-  // Rupiya is excluded from bulk category update
-  if (typeUpper.includes("RUPIYA") || nameUpper.includes("RUPIYA")) {
-    return null;
-  }
 
   // 1. Antam Retro
   if (typeUpper === "RETRO ANTAM" || typeUpper === "ANTAM RETRO" || nameUpper.includes("RETRO ANTAM")) {
@@ -91,12 +86,12 @@ export function matchProductCategory(product: { name: string; type?: string | nu
   if (typeUpper.includes("MICRO") || nameUpper.includes("MICRO GOLD")) {
     return "microgold";
   }
-  // 5. Dirham (Dirham ABA only)
-  if (typeUpper.includes("DIRHAM") || nameUpper.includes("DIRHAM")) {
+  // 5. Dirham & Rupiya (Dirham ABA & Rupiya)
+  if (typeUpper.includes("DIRHAM") || typeUpper.includes("RUPIYA") || nameUpper.includes("DIRHAM") || nameUpper.includes("RUPIYA")) {
     return "dirham";
   }
   // 6. Perak (Silverium products)
-  if (typeUpper.includes("SILVERIUM") || nameUpper.includes("SILVERIUM")) {
+  if (product.category === "silver" || typeUpper.includes("SILVERIUM") || nameUpper.includes("SILVERIUM")) {
     return "perak";
   }
 
