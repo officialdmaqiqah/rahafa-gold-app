@@ -26,7 +26,7 @@ export function StorefrontFooter() {
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Penyedia logam mulia emas batangan murni 99.99% (24 Karat), koin dinar syariah, dan perhiasan berstandar SNI 8887 &amp; akreditasi LBMA. Menghadirkan solusi simpanan aset aman, likuid, dan terpercaya bagi masyarakat Indonesia.
+              Butik dan pusat jual beli resmi logam mulia emas batangan ANTAM LM CertiCard, Retro Antam, MiniGold, koin dirham syariah, dan perak murni. Menghadirkan transaksi aman dengan jaminan keaslian seumur hidup dan buyback likuid terpercaya.
             </p>
 
             <div className="flex items-center gap-3 text-xs text-amber-300/90 pt-1">

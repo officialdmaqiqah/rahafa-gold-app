@@ -55,10 +55,10 @@ export function ProductCatalog({ products = [] }: ProductCatalogProps) {
             Katalog Produk Resmi
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-[#1b355a]">
-            Koleksi Logam Mulia Emas &amp; Perak Rahafa
+            Koleksi Emas ANTAM &amp; Logam Mulia Resmi
           </h2>
           <p className="text-sm text-slate-500 mt-2 max-w-xl">
-            Menampilkan seluruh produk aktif dari sistem manajemen Rahafa Gold dengan update harga harian resmi secara langsung.
+            Menampilkan seluruh produk emas Antam, MiniGold, Dirham, dan Perak yang tersedia di Rahafa Gold dengan update harga pasar harian resmi.
           </p>
         </div>
 

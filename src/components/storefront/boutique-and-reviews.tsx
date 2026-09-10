@@ -71,7 +71,7 @@ export function BoutiqueAndReviews() {
             </div>
             <h4 className="font-bold text-slate-900 text-base">Garansi Buyback Resmi</h4>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-              Komitmen membeli kembali emas cetakan Rahafa dengan patokan harga pasar terupdate tanpa potongan tersembunyi.
+              Komitmen membeli kembali emas batangan ANTAM dan logam mulia resmi dengan patokan harga pasar terupdate tanpa potongan tersembunyi.
             </p>
           </div>
 

@@ -371,7 +371,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
           <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
             <h4 className="font-bold text-slate-900 text-base">Standar Akreditasi &amp; Segel Anti-Pemalsuan</h4>
             <p>
-              Produk {product.name} telah melalui serangkaian pengujian assay laboratorium berakreditasi SNI 8887:2020 dan standar internasional LBMA. Nomor seri dan spesifikasi tercatat dalam basis data resmi Rahafa Gold.
+              Produk {product.name} dicetak resmi oleh produsen refiner terakreditasi (PT ANTAM Tbk / Refiner LBMA) dengan standar SNI 8887:2020. Rahafa Gold menjamin 100% keaslian fisik, kadar kemurnian, dan keutuhan segel CertiCard saat Anda bertransaksi di butik kami.
             </p>
             <p>
               Segel kemasan dilengkapi fitur pelindung tamper-evident. Jika kemasan pernah dibuka atau dimanipulasi, pola pengaman mikroskopis akan rusak sebagai indikator visual otomatis.

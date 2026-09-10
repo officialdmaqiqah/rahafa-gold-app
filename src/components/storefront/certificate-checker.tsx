@@ -27,15 +27,15 @@ export function CertificateChecker() {
       // Generate clean verification result for demo/production
       const cleanSerial = serialInput.trim().toUpperCase();
       setVerifiedResult({
-        serialNumber: cleanSerial.startsWith("RFG") ? cleanSerial : `RFG-2026-${cleanSerial.slice(-4) || "8892"}`,
-        productName: "Rahafa Gold Minted Ingot Bar",
+        serialNumber: cleanSerial.startsWith("ANT") || cleanSerial.startsWith("LM") ? cleanSerial : `LM-${cleanSerial.slice(-6) || "2345678"}`,
+        productName: "Emas Batangan ANTAM LM CertiCard",
         weight: "10.00 Gram",
         fineness: "999.9 (24 Karat)",
-        standard: "SNI 8887:2020 & Akreditasi LBMA",
-        assayDate: "02 September 2026",
-        assayLab: "Balai Pengujian Logam Mulia Terakreditasi",
-        sealStatus: "ORIGINAL & TAMPER-PROOF",
-        custodyStatus: "Tervalidasi di Basis Data Resmi Rahafa Gold",
+        standard: "SNI 8887:2020 & Akreditasi LBMA Refiner",
+        assayDate: "Terverifikasi Resmi PT ANTAM Tbk",
+        assayLab: "UBPP Logam Mulia (LBMA Good Delivery)",
+        sealStatus: "ORIGINAL & TAMPER-PROOF UNBROKEN",
+        custodyStatus: "Tervalidasi di Butik & Sistem Kasir Rahafa Gold",
       });
     }, 600);
   };
@@ -52,50 +52,50 @@ export function CertificateChecker() {
           <div className="lg:col-span-6 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-[#b47a00] text-xs font-bold uppercase tracking-wider">
               <QrCode className="w-3.5 h-3.5" />
-              Sistem Otentikasi Terenkripsi
+              Verifikasi Sertifikat &amp; Kemasan
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-bold font-serif text-[#1b355a]">
-              Verifikasi Keaslian &amp; Sertifikat Emas
+              Cek Keaslian Emas Batangan ANTAM &amp; Kemasan CertiCard
             </h2>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Setiap emas batangan Rahafa Gold dilengkapi dengan nomor seri unik mikroskopis dan kemasan segel CertiCard berhologram. Masukkan nomor seri yang tertera pada kemasan emas Anda untuk memvalidasi keaslian spesifikasi laboratorium.
+              Setiap emas batangan ANTAM Logam Mulia yang Anda beli di Rahafa Gold merupakan produk asli cetakan resmi PT ANTAM Tbk yang disegel dalam kemasan CertiCard tamper-evident. Masukkan nomor seri yang tertera pada kartu kemasan untuk memvalidasi spesifikasi resmi.
             </p>
 
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-700">
-                  <strong className="text-slate-900 font-bold">Segel Tamper-Evident:</strong> Pola honeycomb pelindung akan rusak otomatis jika kemasan pernah dibuka atau diutak-atik.
+                  <strong className="text-slate-900 font-bold">Segel Asli Utuh:</strong> Pastikan kemasan CertiCard dalam kondisi prima tanpa bekas lem ulang atau robekan pada segel hologram pengaman.
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-700">
-                  <strong className="text-slate-900 font-bold">Jaminan Buyback 100%:</strong> Emas dengan nomor seri valid di sistem kami dijamin diterima buyback di seluruh jaringan resmi.
+                  <strong className="text-slate-900 font-bold">Garansi Buyback Rahafa Gold:</strong> Emas ANTAM dengan segel CertiCard asli dijamin diterima buyback di butik kami dengan pencairan instan.
                 </div>
               </div>
             </div>
 
             {/* Quick Sample Links */}
             <div className="text-xs text-slate-500 pt-1">
-              Contoh nomor seri untuk dicoba:{" "}
+              Contoh nomor seri kartu:{" "}
               <button
                 type="button"
-                onClick={() => handleQuickSample("RFG-2026-00108")}
+                onClick={() => handleQuickSample("LM-2345678")}
                 className="text-[#d99b00] font-bold underline hover:text-[#b47a00] ml-1"
               >
-                RFG-2026-00108
+                LM-2345678
               </button>
               {" • "}
               <button
                 type="button"
-                onClick={() => handleQuickSample("RFG-2026-00259")}
+                onClick={() => handleQuickSample("LM-8892104")}
                 className="text-[#d99b00] font-bold underline hover:text-[#b47a00]"
               >
-                RFG-2026-00259
+                LM-8892104
               </button>
             </div>
           </div>
