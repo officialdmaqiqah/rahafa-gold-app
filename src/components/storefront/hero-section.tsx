@@ -127,24 +127,12 @@ export function HeroSection({
               </div>
 
               {/* Ingot Visual Frame */}
-              <div className="relative h-56 w-full rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-slate-900 via-[#101935] to-slate-950 flex items-center justify-center p-4 border border-slate-800">
-                {/* Visual Representation of Ingot with Metallic Lighting */}
-                <div className="relative w-32 h-44 rounded-lg bg-gradient-to-tr from-[#d4af37] via-[#fff1a8] to-[#997200] p-1 shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
-                  <div className="w-full h-full bg-gradient-to-b from-[#b38f26] via-[#d4af37] to-[#7d6014] rounded-md p-2 flex flex-col justify-between items-center text-[#1a1200] border border-[#ffe088]/40">
-                    <div className="text-center">
-                      <p className="text-[9px] font-black tracking-widest uppercase">RAHAFA</p>
-                      <p className="text-[7px] tracking-wider opacity-80">FINE GOLD</p>
-                    </div>
-                    <div className="w-8 h-8 rounded-full border border-black/20 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-[#1a1200]" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-black tracking-tight">{actualGoldName.toUpperCase()}</p>
-                      <p className="text-[8px] font-bold">999.9</p>
-                      <p className="text-[6px] tracking-widest uppercase mt-0.5 opacity-70">SNI 8887</p>
-                    </div>
-                  </div>
-                </div>
+              <div className="relative h-64 w-full rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-slate-900 via-[#101935] to-slate-950 flex items-center justify-center p-3 border border-slate-800">
+                <img
+                  src={featuredGold?.image_url || "/images/products/antam_certicard.jpg"}
+                  alt={actualGoldName}
+                  className="h-full w-auto max-w-full object-contain rounded-lg transform group-hover:scale-105 transition-transform duration-500 shadow-2xl"
+                />
 
                 <div className="absolute bottom-3 left-3 bg-[#1b355a]/90 backdrop-blur-md px-2.5 py-1 rounded-md text-white text-[11px] font-semibold text-amber-300 border border-amber-400/20 shadow">
                   Kemasan CertiCard Resmi

@@ -16,6 +16,7 @@ export interface StorefrontProduct {
   is_active: boolean;
   tag?: string;
   badge?: string;
+  image_url: string;
 }
 
 export interface StorefrontData {
@@ -27,6 +28,45 @@ export interface StorefrontData {
   lastUpdatedText: string;
   sessionName: string;
   date: string;
+}
+
+export function getProductImage(product: { category?: string; type?: string; weight?: number; name?: string }): string {
+  const type = (product.type || "").toUpperCase();
+  const name = (product.name || "").toUpperCase();
+  const category = (product.category || "").toLowerCase();
+  const weight = Number(product.weight) || 0;
+
+  // 1. Antam CertiCard (New Reinvented CertiCard)
+  if (type === "ANTAM" || (name.includes("ANTAM") && !type.includes("RETRO") && !name.includes("RETRO"))) {
+    if (weight === 1) return "/images/products/antam_1g_certicard.jpg";
+    if (weight === 5) return "/images/products/antam_5g_certicard.jpg";
+    if (weight === 10) return "/images/products/antam_10g_certicard.jpg";
+    if (weight >= 25) return "/images/products/antam_25g_vault.jpg";
+    return "/images/products/antam_certicard.jpg";
+  }
+
+  // 2. Retro Antam (Antam Klasik Potrait dengan Sertifikat)
+  if (type.includes("RETRO") || name.includes("RETRO")) {
+    return "/images/products/retro_antam.jpg";
+  }
+
+  // 3. MiniGold & Micro Gold (Kemasan Kartu 24K)
+  if (type.includes("MINIGOLD") || type.includes("MICRO") || name.includes("MINIGOLD") || name.includes("MICRO")) {
+    return "/images/products/minigold_card.jpg";
+  }
+
+  // 4. Koin Dirham & Rupiya (Perak Murni Syariah)
+  if (type.includes("DIRHAM") || type.includes("RUPIYA") || name.includes("DIRHAM") || name.includes("RUPIYA")) {
+    return "/images/products/dirham_perak.jpg";
+  }
+
+  // 5. Perak Silverium (Batangan Perak Murni 99.9%)
+  if (category === "silver" || type.includes("SILVERIUM") || name.includes("SILVERIUM")) {
+    return "/images/products/silverium_bar.jpg";
+  }
+
+  // Default
+  return "/images/products/antam_certicard.jpg";
 }
 
 export async function getStorefrontData(): Promise<StorefrontData> {
@@ -43,7 +83,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     const activeDate = latestActiveSession?.[0]?.date || new Date().toISOString().split("T")[0];
     const activeSession = latestActiveSession?.[0]?.session_name || "Sesi 1";
 
-    // 2. Fetch prices for that active date and session
+    // 2. Fetch products and prices for that active date and session
     const [
       { data: rawProducts, error: prodErr },
       { data: rawPrices, error: priceErr }
@@ -71,24 +111,21 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       });
     }
 
-    // 3. Map products with price
+    // 3. Map products with real prices and real images
     const products: StorefrontProduct[] = (rawProducts || [])
       .map((p) => {
         const priceRow = priceMap.get(p.id);
         const retailPrice = Number(priceRow?.retail_sell_price) || 0;
         
-        // Buyback price: if present in db, use it. Otherwise calculate realistic floor (92% for gold, 85% for silver)
         let buybackPrice = Number(priceRow?.buyback_price) || 0;
         if (!buybackPrice && retailPrice > 0) {
           const ratio = p.category === "silver" ? 0.85 : 0.92;
           buybackPrice = Math.round((retailPrice * ratio) / 1000) * 1000;
         }
 
-        // Tax (PPh 22: 0.25%)
         const tax = Math.round(retailPrice * 0.0025);
         const totalPrice = retailPrice + tax;
 
-        // Tag determination
         let tag = "";
         let badge = p.category === "gold" ? "999.9 24K" : "Fine Silver 99.9%";
         const cleanType = (p.type || "").trim().toUpperCase();
@@ -106,6 +143,8 @@ export async function getStorefrontData(): Promise<StorefrontData> {
           tag = "Edisi Kolektor";
         }
 
+        const imageUrl = getProductImage(p);
+
         return {
           id: p.id,
           item_code: p.item_code || "",
@@ -122,13 +161,12 @@ export async function getStorefrontData(): Promise<StorefrontData> {
           is_active: Boolean(p.is_active),
           tag,
           badge,
+          image_url: imageUrl,
         };
       })
-      // Filter out products with 0 price unless wanted
       .filter((p) => p.retail_price > 0);
 
     // 4. Determine Benchmark 1 Gram Price
-    // Prefer ANTAM 1 Gram or RETRO ANTAM 1 Gram
     const antam1g = products.find(
       (p) => p.weight === 1 && p.type.toUpperCase().includes("ANTAM") && !p.name.toLowerCase().includes("sale")
     ) || products.find((p) => p.weight === 1 && p.category === "gold") || products[0];
@@ -182,7 +220,6 @@ export async function getStorefrontData(): Promise<StorefrontData> {
 export async function getProductDetail(idOrCode: string): Promise<{ product: StorefrontProduct | null; relatedProducts: StorefrontProduct[] }> {
   const { products } = await getStorefrontData();
 
-  // Match by id or item_code or weight (e.g. "10g")
   let target = products.find((p) => p.id === idOrCode || p.item_code.toLowerCase() === idOrCode.toLowerCase());
 
   if (!target && (idOrCode === "10g" || idOrCode === "10")) {
@@ -193,7 +230,6 @@ export async function getProductDetail(idOrCode: string): Promise<{ product: Sto
     target = products.find((p) => p.weight === 5 && p.type.toUpperCase().includes("ANTAM")) || products.find((p) => p.weight === 5);
   }
 
-  // Fallback to first product if not found
   if (!target && products.length > 0) {
     target = products[0];
   }

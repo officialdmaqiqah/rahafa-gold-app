@@ -114,18 +114,14 @@ export function ProductCatalog({ products = [] }: ProductCatalogProps) {
                 {p.badge}
               </span>
 
-              {/* Graphic Representation */}
-              <div className={`relative w-28 h-36 rounded-lg ${p.category === "silver" ? "bg-gradient-to-tr from-slate-400 via-slate-100 to-slate-500" : "bg-gradient-to-tr from-[#d4af37] via-[#fff1a8] to-[#997200]"} p-1 shadow-2xl transform group-hover:scale-105 transition-transform duration-500 flex items-center justify-center`}>
-                <div className={`w-full h-full ${p.category === "silver" ? "bg-gradient-to-b from-slate-300 via-slate-100 to-slate-400 text-slate-900" : "bg-gradient-to-b from-[#b38f26] via-[#d4af37] to-[#7d6014] text-[#1a1200]"} rounded-md p-2 flex flex-col justify-between items-center text-center`}>
-                  <span className="text-[8px] font-black tracking-widest uppercase">RAHAFA</span>
-                  <div className="w-6 h-6 rounded-full border border-black/20 flex items-center justify-center">
-                    <Sparkles className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-black block">{p.weight} {p.unit}</span>
-                    <span className="text-[7px] font-bold opacity-80 uppercase">{p.type}</span>
-                  </div>
-                </div>
+              {/* Real Product Image Frame */}
+              <div className="relative h-48 w-full flex items-center justify-center p-2">
+                <img
+                  src={p.image_url}
+                  alt={p.name}
+                  className="h-full w-auto max-w-full object-contain rounded-lg transform group-hover:scale-105 transition-transform duration-500 shadow-xl"
+                  loading="lazy"
+                />
               </div>
 
               <div className="absolute bottom-3 left-4 text-[11px] text-slate-400 flex items-center gap-1">

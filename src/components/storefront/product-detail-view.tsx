@@ -90,28 +90,12 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
             </div>
 
             {/* Large Bullion Visual Frame */}
-            <div className="relative h-80 sm:h-96 w-full rounded-2xl bg-gradient-to-b from-slate-900 via-[#101935] to-slate-950 flex items-center justify-center p-6 border border-slate-800 shadow-inner">
-              {/* Product Bar */}
-              <div className={`relative w-40 sm:w-48 h-60 sm:h-72 rounded-xl ${isSilver ? "bg-gradient-to-tr from-slate-400 via-slate-100 to-slate-500" : "bg-gradient-to-tr from-[#d4af37] via-[#fff1a8] to-[#997200]"} p-1.5 shadow-2xl transition-transform duration-500 hover:scale-105`}>
-                <div className={`w-full h-full ${isSilver ? "bg-gradient-to-b from-slate-300 via-slate-100 to-slate-400 text-slate-900" : "bg-gradient-to-b from-[#b38f26] via-[#d4af37] to-[#7d6014] text-[#1a1200]"} rounded-lg p-4 flex flex-col justify-between items-center border border-[#ffe088]/50`}>
-                  <div className="text-center">
-                    <p className="text-xs font-black tracking-widest uppercase">RAHAFA GOLD</p>
-                    <p className="text-[9px] tracking-wider font-semibold opacity-85">
-                      {isSilver ? "FINE SILVER" : "FINE GOLD 999.9"}
-                    </p>
-                  </div>
-
-                  <div className="w-12 h-12 rounded-full border border-black/20 flex items-center justify-center">
-                    <Sparkles className="w-6 h-6" />
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-xl font-black tracking-tight">{product.weight} {product.unit.toUpperCase()}</p>
-                    <p className="text-xs font-bold">{isSilver ? "PERAK MURNI" : "24 KARAT"}</p>
-                    <p className="text-[9px] tracking-widest uppercase mt-1 opacity-80">SNI 8887 : 2020</p>
-                  </div>
-                </div>
-              </div>
+            <div className="relative h-80 sm:h-96 w-full rounded-2xl bg-gradient-to-b from-slate-900 via-[#101935] to-slate-950 flex items-center justify-center p-6 border border-slate-800 shadow-inner overflow-hidden">
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-full w-auto max-w-full object-contain rounded-xl shadow-2xl transform hover:scale-105 transition-transform duration-500"
+              />
 
               {/* Seal Tag Badge */}
               <div className="absolute bottom-4 left-4 bg-[#1b355a]/95 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-semibold text-amber-300 border border-amber-400/30 shadow-md flex items-center gap-1.5">
