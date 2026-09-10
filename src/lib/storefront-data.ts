@@ -38,10 +38,6 @@ export function getProductImage(product: { category?: string; type?: string; wei
 
   // 1. Antam CertiCard (New Reinvented CertiCard)
   if (type === "ANTAM" || (name.includes("ANTAM") && !type.includes("RETRO") && !name.includes("RETRO"))) {
-    if (weight === 1) return "/images/products/antam_1g_certicard.jpg";
-    if (weight === 5) return "/images/products/antam_5g_certicard.jpg";
-    if (weight === 10) return "/images/products/antam_10g_certicard.jpg";
-    if (weight >= 25) return "/images/products/antam_25g_vault.jpg";
     return "/images/products/antam_certicard.jpg";
   }
 
