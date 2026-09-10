@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -8,9 +8,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-serif",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Rahafa Gold - Manajemen & Kasir",
-  description: "Pusat jual beli Emas & Perak",
+  title: "Rahafa Gold | Investasi Logam Mulia & Perhiasan Eksklusif",
+  description: "Pusat investasi emas batangan murni 99.99% SNI & LBMA certified, dinar syariah, dan perhiasan mulia terpercaya.",
 };
 
 export default function RootLayout({
@@ -19,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable}`} suppressHydrationWarning>
+    <html lang="id" className={`${plusJakartaSans.variable} ${playfairDisplay.variable}`} suppressHydrationWarning>
       <body
         className="font-sans antialiased bg-background min-h-screen text-foreground"
         suppressHydrationWarning

@@ -11,12 +11,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Home, Package, DollarSign, ArrowDownCircle, Archive, FileText, RefreshCcw, PieChart, Settings, LogOut, History, Wallet, CalendarClock } from "lucide-react"
+import { Home, Package, DollarSign, ArrowDownCircle, Archive, FileText, RefreshCcw, PieChart, Settings, LogOut, History, Wallet, CalendarClock, Store } from "lucide-react"
 import Link from "next/link"
 import { logoutAction } from "@/app/actions"
 
 const items = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Lihat Toko Publik", url: "/", icon: Store },
   { title: "Produk", url: "/produk", icon: Package },
   { title: "Harga Hari Ini", url: "/harga-harian", icon: DollarSign },
   { title: "Barang Masuk", url: "/barang-masuk", icon: ArrowDownCircle },

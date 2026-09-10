@@ -1,5 +1,5 @@
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
-import { getDashboardData } from "./actions";
+import { getDashboardData } from "../actions";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

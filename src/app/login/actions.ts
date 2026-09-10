@@ -60,5 +60,5 @@ export async function loginAction(prevState: any, formData: FormData) {
   }
   
   // Redirect must be OUTSIDE try-catch block to work properly in Next.js Server Actions
-  redirect("/");
+  redirect("/dashboard");
 }
