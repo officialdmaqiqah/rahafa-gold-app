@@ -45,34 +45,34 @@ export function CertificateChecker() {
   };
 
   return (
-    <section id="cek-sertifikat" className="py-16 max-w-[1360px] mx-auto px-4 sm:px-8">
-      <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200 shadow-md">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <section id="cek-sertifikat" className="py-12 sm:py-16 max-w-[1360px] mx-auto px-3.5 sm:px-8">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 lg:p-12 border border-slate-200 shadow-md">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Column: Context & Instructions */}
-          <div className="lg:col-span-6 space-y-4">
+          <div className="lg:col-span-6 space-y-3.5 sm:space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-[#b47a00] text-xs font-bold uppercase tracking-wider">
-              <QrCode className="w-3.5 h-3.5" />
-              Verifikasi Sertifikat &amp; Kemasan
+              <QrCode className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>Verifikasi Sertifikat &amp; Kemasan</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl font-bold font-serif text-[#1b355a]">
+            <h2 className="text-2xl sm:text-4xl font-bold font-serif text-[#1b355a] text-balance leading-snug sm:leading-tight">
               Cek Keaslian Emas Batangan ANTAM &amp; Kemasan CertiCard
             </h2>
 
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-base text-slate-600 leading-relaxed text-balance">
               Setiap emas batangan ANTAM Logam Mulia yang Anda beli di Rahafa Gold merupakan produk asli cetakan resmi PT ANTAM Tbk yang disegel dalam kemasan CertiCard tamper-evident. Masukkan nomor seri yang tertera pada kartu kemasan untuk memvalidasi spesifikasi resmi.
             </p>
 
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 space-y-2.5 sm:space-y-3">
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-700">
                   <strong className="text-slate-900 font-bold">Segel Asli Utuh:</strong> Pastikan kemasan CertiCard dalam kondisi prima tanpa bekas lem ulang atau robekan pada segel hologram pengaman.
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-700">
                   <strong className="text-slate-900 font-bold">Garansi Buyback Rahafa Gold:</strong> Emas ANTAM dengan segel CertiCard asli dijamin diterima buyback di butik kami dengan pencairan instan.
                 </div>
@@ -101,7 +101,7 @@ export function CertificateChecker() {
           </div>
 
           {/* Right Column: Verification Form & Result Box */}
-          <div className="lg:col-span-6 bg-slate-50 rounded-2xl p-6 border border-slate-200">
+          <div className="lg:col-span-6 bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-200">
             <form onSubmit={handleVerify} className="space-y-4">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                 Masukkan Nomor Seri / Kode Hologram

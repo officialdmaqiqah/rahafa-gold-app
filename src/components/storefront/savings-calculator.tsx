@@ -60,32 +60,32 @@ export function SavingsCalculator({
   };
 
   return (
-    <section id="kalkulator" className="py-16 bg-slate-50 border-t border-slate-200/60">
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200 shadow-md">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <section id="kalkulator" className="py-12 sm:py-16 bg-slate-50 border-t border-slate-200/60">
+      <div className="max-w-[1360px] mx-auto px-3.5 sm:px-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 lg:p-12 border border-slate-200 shadow-md">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Left Controls */}
-            <div className="lg:col-span-6 space-y-6">
+            <div className="lg:col-span-6 space-y-4 sm:space-y-6">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-[#b47a00] text-xs font-bold uppercase tracking-wider mb-2">
-                  <Calculator className="w-3.5 h-3.5" />
-                  Simulasi Akumulasi Emas Fisik
+                  <Calculator className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Simulasi Akumulasi Emas Fisik</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold font-serif text-[#1b355a]">
+                <h2 className="text-2xl sm:text-4xl font-bold font-serif text-[#1b355a] text-balance leading-snug sm:leading-tight">
                   Kalkulator Tabungan &amp; Proyeksi Nilai
                 </h2>
-                <p className="text-sm text-slate-500 mt-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1.5 sm:mt-2 text-balance">
                   Hitung seberapa cepat aset emas Anda bertumbuh dengan menabung secara disiplin setiap bulan. Bebas risiko inflasi nilai tukar mata uang.
                 </p>
               </div>
 
               {/* Slider Controller */}
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+              <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-600">
                     Target Alokasi Bulanan
                   </span>
-                  <span className="text-xl font-black text-[#1b355a] font-sans">
+                  <span className="text-lg sm:text-xl font-black text-[#1b355a] font-sans">
                     {formatRupiah(monthlyAmount)}
                   </span>
                 </div>
@@ -101,13 +101,13 @@ export function SavingsCalculator({
                 />
 
                 {/* Quick Presets */}
-                <div className="flex items-center gap-2 flex-wrap pt-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-1 sm:pt-2">
                   <span className="text-[11px] font-bold text-slate-400 mr-1">Preset:</span>
                   {presets.map((p) => (
                     <button
                       key={p}
                       onClick={() => setMonthlyAmount(p)}
-                      className={`text-xs px-3 py-1.5 rounded-lg font-bold border transition-all ${
+                      className={`text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold border transition-all ${
                         monthlyAmount === p
                           ? "bg-[#1b355a] text-white border-[#1b355a] shadow-sm"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
@@ -121,21 +121,21 @@ export function SavingsCalculator({
 
               <div className="text-xs text-slate-500 space-y-1.5">
                 <p className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  Emas fisik dapat dicetak kapan saja dalam denominasi 1g hingga 100g.
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>Emas fisik dapat dicetak kapan saja dalam denominasi 1g hingga 100g.</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <Coins className="w-4 h-4 text-amber-500" />
-                  Penyimpanan brankas aman atau kirim langsung ke alamat rumah Anda.
+                  <Coins className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <span>Penyimpanan brankas aman atau kirim langsung ke alamat rumah Anda.</span>
                 </p>
               </div>
             </div>
 
             {/* Right Projection Cards */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* 1 Year Projection */}
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+                <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Proyeksi 1 Tahun
@@ -174,15 +174,15 @@ export function SavingsCalculator({
               </div>
 
               {/* 5 Years Highlight Card (Navy & Warm Gold) */}
-              <div className="bg-gradient-to-br from-[#1b355a] to-[#122540] rounded-2xl p-6 text-white border border-[#2d4d7a] shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="bg-gradient-to-br from-[#1b355a] to-[#122540] rounded-2xl p-5 sm:p-6 text-white border border-[#2d4d7a] shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-300" />
+                    <Sparkles className="w-4 h-4 text-amber-300 flex-shrink-0" />
                     <span className="text-xs font-bold uppercase tracking-wider text-[#fed65b]">
                       Proyeksi Jangka Panjang (5 Tahun)
                     </span>
                   </div>
-                  <div className="text-3xl font-black text-white mt-2">
+                  <div className="text-2xl sm:text-3xl font-black text-white mt-2 font-sans">
                     {formatRupiah(proj5.estimatedValue)}
                   </div>
                   <p className="text-xs text-slate-300 mt-1">
@@ -198,9 +198,9 @@ export function SavingsCalculator({
                   href={getWaLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#d99b00] to-[#f2ca50] hover:from-[#c68a00] hover:to-[#e2b83a] text-[#1a1200] font-bold text-xs shadow-md transition-all duration-200 whitespace-nowrap flex items-center gap-2 flex-shrink-0"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-[#d99b00] to-[#f2ca50] hover:from-[#c68a00] hover:to-[#e2b83a] text-[#1a1200] font-bold text-xs shadow-md transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-2 flex-shrink-0"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4 flex-shrink-0" />
                   <span>Mulai Program Tabungan</span>
                 </a>
               </div>

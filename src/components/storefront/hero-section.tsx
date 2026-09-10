@@ -45,67 +45,67 @@ export function HeroSection({
   const actualSilverWeight = featuredSilver ? `${featuredSilver.weight}g` : "3.11g";
 
   return (
-    <section className="pt-32 pb-12 max-w-[1360px] mx-auto px-4 sm:px-8">
-      <div className="relative bg-[#1b355a] rounded-3xl p-6 sm:p-10 lg:p-12 text-white shadow-2xl overflow-hidden border border-[#26446e]">
+    <section className="pt-28 sm:pt-36 lg:pt-32 pb-8 sm:pb-12 max-w-[1360px] mx-auto px-3.5 sm:px-8">
+      <div className="relative bg-[#1b355a] rounded-2xl sm:rounded-3xl p-5 sm:p-10 lg:p-12 text-white shadow-2xl overflow-hidden border border-[#26446e]">
         {/* Ambient Glows */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#274a7a] rounded-full blur-3xl pointer-events-none opacity-60"></div>
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center relative z-10">
           {/* Left Column: Hero Copy & Value Proposition */}
-          <div className="lg:col-span-7 flex flex-col items-start gap-5">
+          <div className="lg:col-span-7 flex flex-col items-start gap-3.5 sm:gap-5">
             {/* Accreditation Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#24426d] border border-[#3b5d8d] shadow-sm">
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                Sertifikasi Standar SNI 8887 & Akreditasi LBMA
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#24426d] border border-[#3b5d8d] shadow-sm max-w-full">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-bold text-amber-300 uppercase tracking-wider truncate">
+                Sertifikasi Standar SNI 8887 &amp; Akreditasi LBMA
               </span>
             </div>
 
-            {/* Main Luxury Heading */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif text-white leading-tight tracking-tight">
+            {/* Main Luxury Heading with text-balance to avoid orphaned words */}
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-serif text-white leading-snug sm:leading-tight tracking-tight text-balance">
               Investasi Logam Mulia &amp; Koleksi{" "}
               <span className="text-[#fed65b] italic font-serif">Emas &amp; Perak</span>{" "}
               Eksklusif
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-200 leading-relaxed max-w-2xl font-normal">
+            <p className="text-xs sm:text-base lg:text-lg text-slate-200 leading-relaxed max-w-2xl font-normal text-balance">
               Amankan masa depan finansial keluarga Anda dengan emas murni batangan bersertifikat resmi 99.99% (24 Karat) dan koin dirham syariah. Transaksi transparan, garansi buyback harian, dan jaminan keaslian seumur hidup.
             </p>
 
             {/* Dual CTAs */}
-            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-4 w-full sm:w-auto pt-1 sm:pt-2">
               <a
                 href="#katalog"
-                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#d99b00] to-[#f2ca50] hover:from-[#c68a00] hover:to-[#e2b83a] text-[#1a1200] font-bold text-sm shadow-lg shadow-amber-500/20 transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5"
+                className="w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-[#d99b00] to-[#f2ca50] hover:from-[#c68a00] hover:to-[#e2b83a] text-[#1a1200] font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all duration-300 flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
               >
-                <Gem className="w-4 h-4" />
+                <Gem className="w-4 h-4 flex-shrink-0" />
                 <span>Eksplorasi Katalog Emas &amp; Perak</span>
               </a>
 
               <a
                 href="#kalkulator"
-                className="px-6 py-3.5 rounded-xl bg-[#274570] hover:bg-[#315384] text-white border border-[#3e6293] font-semibold text-sm transition-all duration-200 flex items-center gap-2"
+                className="w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-[#274570] hover:bg-[#315384] text-white border border-[#3e6293] font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2"
               >
-                <Calculator className="w-4 h-4 text-amber-300" />
+                <Calculator className="w-4 h-4 text-amber-300 flex-shrink-0" />
                 <span>Cek Harga &amp; Simulasi</span>
               </a>
             </div>
 
             {/* Micro Trust Pills */}
-            <div className="flex flex-wrap items-center gap-6 pt-3 text-xs text-slate-300 font-medium">
+            <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2 sm:gap-6 pt-1 sm:pt-3 text-xs text-slate-300 font-medium">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>100% Segel Tamper-Evident</span>
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0" />
+                <span className="text-[11px] sm:text-xs">100% Segel Tamper-Evident</span>
               </div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
-                <span>Jaminan Likuiditas Buyback</span>
+                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0" />
+                <span className="text-[11px] sm:text-xs">Jaminan Likuiditas Buyback</span>
               </div>
               <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-amber-400" />
-                <span>Pengiriman Berasuransi Penuh</span>
+                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0" />
+                <span className="text-[11px] sm:text-xs">Pengiriman Berasuransi Penuh</span>
               </div>
             </div>
           </div>
@@ -139,21 +139,21 @@ export function HeroSection({
                 </div>
               </div>
 
-              <div className="flex items-end justify-between">
+              <div className="flex flex-col xs:flex-row xs:items-end justify-between gap-2">
                 <div>
                   <h3 className="font-bold text-base text-slate-900 group-hover:text-[#b47a00] transition-colors flex items-center gap-1">
                     {actualGoldName}
                     <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
                     Nomor Seri Terekam • Sertifikat QR Hologram
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="xs:text-right">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                     Harga Hari Ini
                   </div>
-                  <div className="text-lg font-black text-[#1b355a]">
+                  <div className="text-base sm:text-lg font-black text-[#1b355a]">
                     {formatRupiah(actualGoldPrice)}
                   </div>
                 </div>

@@ -221,21 +221,21 @@ export function LivePriceBoard({
 
         {/* Matrix Table: Denomination Rates */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="bg-[#1b355a] px-6 py-4 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-[#1b355a] p-4 sm:px-6 sm:py-4 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h3 className="font-bold text-base tracking-wide font-serif">
+              <h3 className="font-bold text-sm sm:text-base tracking-wide font-serif">
                 Tabel Harga Produk Rahafa Gold (Database Live)
               </h3>
-              <p className="text-xs text-slate-300">
+              <p className="text-[11px] sm:text-xs text-slate-300">
                 Data harga harian resmi yang aktif di sistem kasir dan inventaris
               </p>
             </div>
 
             {/* Table Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto bg-[#142640] p-1 rounded-xl">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none bg-[#142640] p-1 rounded-xl flex-nowrap max-w-full">
               <button
                 onClick={() => setSelectedTab("antam")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedTab === "antam" ? "bg-[#fed65b] text-[#1a1200]" : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -243,7 +243,7 @@ export function LivePriceBoard({
               </button>
               <button
                 onClick={() => setSelectedTab("retro")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedTab === "retro" ? "bg-[#fed65b] text-[#1a1200]" : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -251,7 +251,7 @@ export function LivePriceBoard({
               </button>
               <button
                 onClick={() => setSelectedTab("minigold")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedTab === "minigold" ? "bg-[#fed65b] text-[#1a1200]" : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -259,7 +259,7 @@ export function LivePriceBoard({
               </button>
               <button
                 onClick={() => setSelectedTab("silver")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                   selectedTab === "silver" ? "bg-[#fed65b] text-[#1a1200]" : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -268,7 +268,61 @@ export function LivePriceBoard({
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* 1. Mobile Cards (< md) */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {currentTabProducts.map((p) => (
+              <div key={p.id} className="p-4 space-y-3 hover:bg-amber-50/30 transition-colors">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 text-[#b47a00] flex items-center justify-center text-xs font-black flex-shrink-0">
+                      {p.weight}g
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900 leading-snug">{p.name}</h4>
+                      <span className="text-[10px] font-mono text-slate-400">Kode: {p.item_code} • {p.type}</span>
+                    </div>
+                  </div>
+                  <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded flex-shrink-0">
+                    {p.weight} {p.unit}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs">
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Beli</span>
+                    <strong className="text-[#1b355a] font-black text-sm">{formatRupiah(p.total_price)}</strong>
+                    <span className="text-[9px] text-slate-400 block">PPh: {formatRupiah(p.tax)}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Est. Buyback</span>
+                    <strong className="text-emerald-700 font-bold text-sm">{formatRupiah(p.buyback_price)}</strong>
+                    <span className="text-[9px] text-emerald-600 block">Pencairan Cepat</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <Link
+                    href={`/katalog/${p.id}`}
+                    className="flex-1 text-center py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+                  >
+                    Detail
+                  </Link>
+                  <a
+                    href={getWaLink(p)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center py-2 rounded-lg bg-[#d99b00] hover:bg-[#c68a00] text-white font-bold text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>Pesan</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 2. Desktop & Tablet Table (md+) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100/80 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
                 <tr>
