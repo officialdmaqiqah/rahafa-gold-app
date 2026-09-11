@@ -102,18 +102,35 @@ export function StorefrontFooter() {
 
           {/* Col 4: Keamanan & Kontak (3 Cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Hubungi Kami</h4>
-            <p className="text-xs text-slate-400">
-              Layanan Concierge &amp; Order Resmi WhatsApp:
-            </p>
-            <p className="text-sm font-bold text-amber-300">+62 853-8410-9496</p>
-            <p className="text-xs text-slate-400">
-              Operasional Butik: Senin - Sabtu (09.00 - 17.00 WIB)
-            </p>
-            <div className="pt-2">
-              <span className="text-[11px] text-slate-500 block">
-                Dilindungi oleh teknologi kemasan CertiCard Gen-3 Anti-Tamper &amp; Asuransi Pengiriman 100%.
-              </span>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Alamat &amp; Kontak</h4>
+            <div className="text-xs text-slate-400 space-y-1">
+              <strong className="text-slate-200 block">Butik Rahafa Gold:</strong>
+              <p className="leading-relaxed">
+                Jl. Flamingo Gandaria 1 Kel. Air Kepala Tujuh Kec. Gerunggang Kota Pangkalpinang
+              </p>
+              <a
+                href="https://maps.app.goo.gl/mgQBGAFfSrzVm2Gq9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-amber-300 hover:text-amber-200 text-[11px] font-medium pt-0.5 hover:underline"
+              >
+                <span>Buka di Google Maps</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <div className="pt-1">
+              <span className="text-xs text-slate-400 block">Layanan Konsultasi &amp; Order:</span>
+              <a
+                href="https://wa.me/6285384109496"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-bold text-amber-300 hover:underline"
+              >
+                +62 853-8410-9496
+              </a>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Senin – Sabtu: 09:00 – 17:00 WIB
+              </p>
             </div>
           </div>
         </div>

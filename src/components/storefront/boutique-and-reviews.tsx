@@ -9,7 +9,8 @@ import {
   Award, 
   CheckCircle2, 
   MessageCircle,
-  Building2
+  Building2,
+  ExternalLink
 } from "lucide-react";
 
 export function BoutiqueAndReviews() {
@@ -151,9 +152,18 @@ export function BoutiqueAndReviews() {
                 <MapPin className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <strong>Butik Pusat Rahafa Gold</strong>
-                  <p className="text-xs text-slate-300 mt-0.5">
-                    Jl. Jendral Sudirman Kav. 52-53, Kawasan Bisnis Terpadu, Jakarta Selatan
+                  <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
+                    Jl. Flamingo Gandaria 1 Kel. Air Kepala Tujuh Kec. Gerunggang Kota Pangkalpinang
                   </p>
+                  <a
+                    href="https://maps.app.goo.gl/mgQBGAFfSrzVm2Gq9"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-[#fed65b] font-bold hover:underline mt-2 group bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
+                  >
+                    <span>Buka Lokasi di Google Maps</span>
+                    <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
                 </div>
               </div>
 
