@@ -145,12 +145,6 @@ export function StorefrontHeader({
             Papan Harga
           </a>
           <a
-            href="#cek-sertifikat"
-            className="text-slate-600 hover:text-[#1b355a] transition-colors"
-          >
-            Cek Sertifikat
-          </a>
-          <a
             href="#kalkulator"
             className="text-slate-600 hover:text-[#1b355a] transition-colors"
           >
@@ -228,13 +222,6 @@ export function StorefrontHeader({
               className="hover:text-[#1b355a] py-1"
             >
               Papan Harga & Tren
-            </a>
-            <a
-              href="#cek-sertifikat"
-              onClick={() => setMobileMenuOpen(false)}
-              className="hover:text-[#1b355a] py-1"
-            >
-              Cek Sertifikat & Keaslian
             </a>
             <a
               href="#kalkulator"

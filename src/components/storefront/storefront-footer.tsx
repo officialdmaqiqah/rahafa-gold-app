@@ -55,11 +55,6 @@ export function StorefrontFooter() {
                 </a>
               </li>
               <li>
-                <a href="#cek-sertifikat" className="hover:text-amber-300 transition-colors">
-                  Cek Keaslian Sertifikat
-                </a>
-              </li>
-              <li>
                 <a href="#kalkulator" className="hover:text-amber-300 transition-colors">
                   Kalkulator Tabungan
                 </a>

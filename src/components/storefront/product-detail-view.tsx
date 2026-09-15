@@ -305,10 +305,10 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                   Tanya Konsultan Butik
                 </a>
                 <Link
-                  href="/#cek-sertifikat"
+                  href="/#harga-tren"
                   className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors text-center"
                 >
-                  Cek Sertifikat Terdaftar
+                  Papan Harga Resmi
                 </Link>
               </div>
             </div>

@@ -19,6 +19,12 @@ export interface StorefrontProduct {
   image_url: string;
 }
 
+export interface TrendPoint {
+  date: string;
+  day: string;
+  price: number;
+}
+
 export interface StorefrontData {
   products: StorefrontProduct[];
   benchmark1g: number;
@@ -28,6 +34,8 @@ export interface StorefrontData {
   lastUpdatedText: string;
   sessionName: string;
   date: string;
+  trendPoints: TrendPoint[];
+  trendPercentage: number;
 }
 
 export function getProductImage(product: { category?: string; type?: string; weight?: number; name?: string }): string {
@@ -164,11 +172,67 @@ export async function getStorefrontData(): Promise<StorefrontData> {
 
     // 4. Determine Benchmark 1 Gram Price
     const antam1g = products.find(
+      (p) => p.weight === 1 && p.type.trim().toUpperCase() === "ANTAM" && !p.name.toLowerCase().includes("retro") && !p.name.toLowerCase().includes("sale")
+    ) || products.find(
       (p) => p.weight === 1 && p.type.toUpperCase().includes("ANTAM") && !p.name.toLowerCase().includes("sale")
     ) || products.find((p) => p.weight === 1 && p.category === "gold") || products[0];
 
     const benchmark1g = antam1g ? antam1g.retail_price : 2818000;
     const benchmarkBuyback1g = antam1g ? antam1g.buyback_price : Math.round(benchmark1g * 0.92);
+
+    // 5. Fetch Real 7-Day Trend History for 1g Gold
+    let trendPoints: TrendPoint[] = [];
+    let trendPercentage = 0;
+
+    if (antam1g?.id) {
+      try {
+        const { data: historyPrices } = await supabase
+          .from("daily_prices")
+          .select("date, session_name, status, retail_sell_price, buyback_price, created_at")
+          .eq("product_id", antam1g.id)
+          .gt("retail_sell_price", 0)
+          .order("date", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        const datePriceMap = new Map<string, { date: string; price: number }>();
+        (historyPrices || []).forEach((row) => {
+          if (!datePriceMap.has(row.date)) {
+            datePriceMap.set(row.date, {
+              date: row.date,
+              price: Number(row.retail_sell_price),
+            });
+          }
+        });
+
+        const sortedDates = Array.from(datePriceMap.values()).slice(0, 7).reverse();
+        if (sortedDates.length >= 2) {
+          const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+          trendPoints = sortedDates.map((item, idx) => {
+            const d = new Date(item.date);
+            const dayName = isNaN(d.getTime()) ? item.date : dayNames[d.getDay()];
+            const isLatest = idx === sortedDates.length - 1;
+            return {
+              date: item.date,
+              day: isLatest ? "Hari ini" : dayName,
+              price: item.price,
+            };
+          });
+
+          const firstPrice = trendPoints[0].price;
+          const latestPrice = trendPoints[trendPoints.length - 1].price;
+          trendPercentage = firstPrice > 0 ? Number((((latestPrice - firstPrice) / firstPrice) * 100).toFixed(2)) : 0;
+        }
+      } catch (trendErr) {
+        console.error("Error fetching trend history:", trendErr);
+      }
+    }
+
+    if (trendPoints.length === 0) {
+      trendPoints = [
+        { date: activeDate, day: "Hari ini", price: benchmark1g }
+      ];
+      trendPercentage = 0;
+    }
 
     // Find 10g Gold
     const gold10g = products.find(
@@ -197,6 +261,8 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       lastUpdatedText: `${dateFormatted} (${activeSession})`,
       sessionName: activeSession,
       date: activeDate,
+      trendPoints,
+      trendPercentage,
     };
   } catch (error) {
     console.error("Fatal error in getStorefrontData:", error);
@@ -209,6 +275,8 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       lastUpdatedText: "Hari ini (Sesi 1)",
       sessionName: "Sesi 1",
       date: new Date().toISOString().split("T")[0],
+      trendPoints: [],
+      trendPercentage: 0,
     };
   }
 }

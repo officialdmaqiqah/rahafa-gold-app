@@ -4,7 +4,6 @@ import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { HeroSection } from "@/components/storefront/hero-section";
 import { TrustBar } from "@/components/storefront/trust-bar";
 import { LivePriceBoard } from "@/components/storefront/live-price-board";
-import { CertificateChecker } from "@/components/storefront/certificate-checker";
 import { ProductCatalog } from "@/components/storefront/product-catalog";
 import { SavingsCalculator } from "@/components/storefront/savings-calculator";
 import { BoutiqueAndReviews } from "@/components/storefront/boutique-and-reviews";
@@ -38,16 +37,15 @@ export default async function StorefrontPage() {
         {/* 4 Pillars Trust Highlights */}
         <TrustBar />
 
-        {/* Live Price Board with real database matrix table */}
+        {/* Live Price Board with real database matrix table & dynamic trend */}
         <LivePriceBoard
           products={data.products}
           baseBuyPerGram={data.benchmark1g}
           baseBuybackPerGram={data.benchmarkBuyback1g}
           lastUpdatedText={data.lastUpdatedText}
+          trendPoints={data.trendPoints}
+          trendPercentage={data.trendPercentage}
         />
-
-        {/* Certificate & Serial Authenticity Checker */}
-        <CertificateChecker />
 
         {/* Curated Product Catalog displaying actual products & daily prices */}
         <ProductCatalog
