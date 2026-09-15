@@ -1,184 +1,205 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { 
   ShieldCheck, 
   QrCode, 
-  Search, 
   CheckCircle2, 
-  AlertCircle, 
-  Lock, 
+  Smartphone, 
+  ScanLine, 
+  ExternalLink,
   Sparkles,
-  Award
+  Award,
+  Eye,
+  Lock
 } from "lucide-react";
 
 export function CertificateChecker() {
-  const [serialInput, setSerialInput] = useState("");
-  const [verifiedResult, setVerifiedResult] = useState<any | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const steps = [
+    {
+      number: "01",
+      title: "Unduh Aplikasi CertiEye",
+      desc: "Instal aplikasi resmi CertiEye di smartphone Anda melalui Google Play Store (Android) atau Apple App Store (iOS).",
+    },
+    {
+      number: "02",
+      title: "Pindai Kode di Belakang Kemasan",
+      desc: "Buka aplikasi CertiEye, lalu arahkan kamera ke barcode/kode khusus CertiEye yang terletak di sisi belakang kartu kemasan ANTAM.",
+    },
+    {
+      number: "03",
+      title: "Posisikan dalam Kotak Bidik",
+      desc: "Posisikan kartu secara datar dengan pencahayaan cukup hingga aplikasi berhasil membaca mikropattern pengaman.",
+    },
+    {
+      number: "04",
+      title: "Konfirmasi Keaslian 'AUTHENTIC'",
+      desc: "Jika kemasan asli dan belum pernah rusak/dipalsukan, aplikasi seketika menampilkan logo resmi PT ANTAM Tbk berstatus PASSED / AUTHENTIC.",
+    },
+  ];
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!serialInput.trim()) return;
-
-    setIsSearching(true);
-    setTimeout(() => {
-      setIsSearching(false);
-      // Generate clean verification result for demo/production
-      const cleanSerial = serialInput.trim().toUpperCase();
-      setVerifiedResult({
-        serialNumber: cleanSerial.startsWith("ANT") || cleanSerial.startsWith("LM") ? cleanSerial : `LM-${cleanSerial.slice(-6) || "2345678"}`,
-        productName: "Emas Batangan ANTAM LM CertiCard",
-        weight: "10.00 Gram",
-        fineness: "999.9 (24 Karat)",
-        standard: "SNI 8887:2020 & Akreditasi LBMA Refiner",
-        assayDate: "Terverifikasi Resmi PT ANTAM Tbk",
-        assayLab: "UBPP Logam Mulia (LBMA Good Delivery)",
-        sealStatus: "ORIGINAL & TAMPER-PROOF UNBROKEN",
-        custodyStatus: "Tervalidasi di Butik & Sistem Kasir Rahafa Gold",
-      });
-    }, 600);
-  };
-
-  const handleQuickSample = (sample: string) => {
-    setSerialInput(sample);
-  };
+  const physicalChecks = [
+    {
+      icon: Lock,
+      title: "Segel Tamper-Evident Utuh",
+      desc: "Kemasan CertiCard memiliki pengaman canggih anti buka-ulang. Jika pernah dicoba dibuka atau disayat, akan timbul pola robekan permanen yang tidak bisa dilem kembali.",
+    },
+    {
+      icon: Sparkles,
+      title: "Hologram Berpendar Dinamis",
+      desc: "Logo ANTAM dan elemen hologram di kemasan memantulkan kilau warna pelangi spektral saat dilihat dari berbagai sudut kemiringan cahaya.",
+    },
+    {
+      icon: Eye,
+      title: "Pendaran Khusus Sinar UV",
+      desc: "Di bawah pancaran lampu sinar ultraviolet (UV), kartu CertiCard asli memancarkan logo khusus dan serat fluorescent pengaman yang tidak bisa ditiru percetakan biasa.",
+    },
+  ];
 
   return (
     <section id="cek-sertifikat" className="py-12 sm:py-16 max-w-[1360px] mx-auto px-3.5 sm:px-8">
       <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 lg:p-12 border border-slate-200 shadow-md">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
-          {/* Left Column: Context & Instructions */}
-          <div className="lg:col-span-6 space-y-3.5 sm:space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-[#b47a00] text-xs font-bold uppercase tracking-wider">
-              <QrCode className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>Verifikasi Sertifikat &amp; Kemasan</span>
-            </div>
-
-            <h2 className="text-2xl sm:text-4xl font-bold font-serif text-[#1b355a] text-balance leading-snug sm:leading-tight">
-              Cek Keaslian Emas Batangan ANTAM &amp; Kemasan CertiCard
-            </h2>
-
-            <p className="text-xs sm:text-base text-slate-600 leading-relaxed text-balance">
-              Setiap emas batangan ANTAM Logam Mulia yang Anda beli di Rahafa Gold merupakan produk asli cetakan resmi PT ANTAM Tbk yang disegel dalam kemasan CertiCard tamper-evident. Masukkan nomor seri yang tertera pada kartu kemasan untuk memvalidasi spesifikasi resmi.
-            </p>
-
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 space-y-2.5 sm:space-y-3">
-              <div className="flex items-start gap-2.5 sm:gap-3">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-slate-700">
-                  <strong className="text-slate-900 font-bold">Segel Asli Utuh:</strong> Pastikan kemasan CertiCard dalam kondisi prima tanpa bekas lem ulang atau robekan pada segel hologram pengaman.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 sm:gap-3">
-                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-slate-700">
-                  <strong className="text-slate-900 font-bold">Garansi Buyback Rahafa Gold:</strong> Emas ANTAM dengan segel CertiCard asli dijamin diterima buyback di butik kami dengan pencairan instan.
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Sample Links */}
-            <div className="text-xs text-slate-500 pt-1">
-              Contoh nomor seri kartu:{" "}
-              <button
-                type="button"
-                onClick={() => handleQuickSample("LM-2345678")}
-                className="text-[#d99b00] font-bold underline hover:text-[#b47a00] ml-1"
-              >
-                LM-2345678
-              </button>
-              {" • "}
-              <button
-                type="button"
-                onClick={() => handleQuickSample("LM-8892104")}
-                className="text-[#d99b00] font-bold underline hover:text-[#b47a00]"
-              >
-                LM-8892104
-              </button>
-            </div>
+        
+        {/* Section Header */}
+        <div className="max-w-3xl mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-[#b47a00] text-xs font-bold uppercase tracking-wider mb-3.5">
+            <QrCode className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>Panduan Resmi Verifikasi Keaslian</span>
           </div>
 
-          {/* Right Column: Verification Form & Result Box */}
-          <div className="lg:col-span-6 bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-200">
-            <form onSubmit={handleVerify} className="space-y-4">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Masukkan Nomor Seri / Kode Hologram
-              </label>
+          <h2 className="text-2xl sm:text-4xl font-bold font-serif text-[#1b355a] text-balance leading-snug sm:leading-tight">
+            Cara Cek Keaslian Emas ANTAM CertiCard
+          </h2>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  value={serialInput}
-                  onChange={(e) => setSerialInput(e.target.value)}
-                  placeholder="Contoh: RFG-2026-00108"
-                  className="w-full h-12 bg-white border border-slate-300 rounded-xl px-4 pl-11 text-slate-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#1b355a] focus:border-transparent uppercase tracking-wider"
-                  required
-                />
-                <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSearching}
-                className="w-full h-12 bg-[#1b355a] hover:bg-[#152a47] text-white font-bold rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 text-sm disabled:opacity-75"
-              >
-                {isSearching ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Memverifikasi Database Vault...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4 text-amber-300" />
-                    <span>Verifikasi Keaslian Sertifikat</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Verification Result Card */}
-            {verifiedResult && (
-              <div className="mt-6 bg-white rounded-xl p-5 border border-emerald-500/40 shadow-sm animate-in fade-in duration-300">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                    <span className="font-bold text-emerald-800 text-sm">
-                      Sertifikat Asli &amp; Terverifikasi
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
-                    LBMA MATCH
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Nomor Seri</span>
-                    <strong className="text-slate-900 font-mono">{verifiedResult.serialNumber}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Kemurnian Logam</span>
-                    <strong className="text-[#1b355a]">{verifiedResult.fineness}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Berat Bersih</span>
-                    <strong className="text-slate-900">{verifiedResult.weight}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Standarisasi</span>
-                    <strong className="text-slate-900">{verifiedResult.standard}</strong>
-                  </div>
-                  <div className="col-span-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                    <span>Status Segel: <strong className="text-emerald-700">{verifiedResult.sealStatus}</strong></span>
-                    <span>Tgl Assay: <strong className="text-slate-700">{verifiedResult.assayDate}</strong></span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <p className="mt-3 text-xs sm:text-base text-slate-600 leading-relaxed text-balance">
+            Seluruh produk emas batangan ANTAM Logam Mulia yang tersedia di <strong>Rahafa Gold</strong> merupakan cetakan resmi PT ANTAM Tbk bersegel kemasan <em>CertiCard tamper-evident</em>. Untuk keamanan maksimal, ikuti panduan verifikasi resmi berikut menggunakan aplikasi <strong>CertiEye</strong> dan pemeriksaan fisik kemasan.
+          </p>
         </div>
+
+        {/* 2-Column Guide Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          {/* Left Column: Digital Verification via CertiEye */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-gradient-to-br from-slate-900 to-[#1b355a] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+              {/* Decorative background glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="flex items-center justify-between gap-4 mb-6 border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/30 flex items-center justify-center text-amber-300">
+                    <Smartphone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white">
+                      Verifikasi Digital via Aplikasi CertiEye
+                    </h3>
+                    <p className="text-xs text-slate-300">
+                      Standar resmi verifikasi PT ANTAM Tbk &amp; CertiCard Security
+                    </p>
+                  </div>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Validasi Akurat
+                </span>
+              </div>
+
+              {/* 4 Step Process */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {steps.map((step) => (
+                  <div 
+                    key={step.number} 
+                    className="bg-white/5 hover:bg-white/10 transition-colors border border-white/10 rounded-xl p-4 space-y-1.5"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-black text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded">
+                        {step.number}
+                      </span>
+                      <h4 className="text-xs font-bold text-white">{step.title}</h4>
+                    </div>
+                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* App Download Links */}
+              <div className="mt-6 pt-5 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
+                  <ScanLine className="w-4 h-4 text-amber-300" />
+                  Unduh aplikasi resmi CertiEye gratis:
+                </span>
+
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.certieye.mobile.certieyeb2c"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-semibold text-white transition-all hover:scale-[1.02]"
+                  >
+                    <span>Google Play</span>
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+                  <a
+                    href="https://apps.apple.com/id/app/certieye/id977508930"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-semibold text-white transition-all hover:scale-[1.02]"
+                  >
+                    <span>App Store</span>
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: 3 Physical Checks & Buyback Guarantee */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+              <div className="flex items-center gap-2 text-slate-800">
+                <ShieldCheck className="w-5 h-5 text-[#b47a00]" />
+                <h3 className="font-bold text-sm sm:text-base text-[#1b355a]">
+                  3 Ciri Fisik Kemasan CertiCard Asli
+                </h3>
+              </div>
+
+              <div className="space-y-3.5">
+                {physicalChecks.map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs">
+                      <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-[#b47a00] flex-shrink-0 mt-0.5">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-slate-900">{item.title}</h4>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Rahafa Gold Assurance Box */}
+            <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
+              <Award className="w-5 h-5 text-emerald-700 flex-shrink-0 mt-0.5" />
+              <div className="text-xs text-emerald-950 space-y-1">
+                <strong className="block font-bold text-emerald-900">
+                  Garansi Keaslian &amp; Buyback Rahafa Gold
+                </strong>
+                <p className="leading-relaxed text-emerald-800">
+                  Setiap keping emas yang Anda beli di Rahafa Gold dijamin 100% cetakan asli resmi bersertifikat. Kami memberikan jaminan <em>buyback</em> langsung di butik kami dengan proses mudah dan pembayaran instan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
   );
