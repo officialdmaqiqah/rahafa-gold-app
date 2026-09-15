@@ -178,7 +178,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                     {formatRupiah(unitBuyPrice)}
                   </div>
                   <span className="text-[11px] text-slate-500">
-                    Termasuk PPh 22 (0.25%) &amp; sertifikat resmi
+                    Harga resmi terupdate &amp; sertifikat keaslian
                   </span>
                 </div>
 

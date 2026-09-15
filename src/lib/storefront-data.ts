@@ -119,8 +119,8 @@ export async function getStorefrontData(): Promise<StorefrontData> {
           buybackPrice = Math.round((retailPrice * ratio) / 1000) * 1000;
         }
 
-        const tax = Math.round(retailPrice * 0.0025);
-        const totalPrice = retailPrice + tax;
+        const tax = 0;
+        const totalPrice = retailPrice;
 
         let tag = "";
         let badge = p.category === "gold" ? "999.9 24K" : "Fine Silver 99.9%";

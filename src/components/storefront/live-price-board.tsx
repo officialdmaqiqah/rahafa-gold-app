@@ -289,9 +289,9 @@ export function LivePriceBoard({
 
                 <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs">
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Beli</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Harga Beli</span>
                     <strong className="text-[#1b355a] font-black text-sm">{formatRupiah(p.total_price)}</strong>
-                    <span className="text-[9px] text-slate-400 block">PPh: {formatRupiah(p.tax)}</span>
+                    <span className="text-[9px] text-slate-400 block">Harga Resmi Aktif</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-semibold block">Est. Buyback</span>
@@ -328,9 +328,7 @@ export function LivePriceBoard({
                 <tr>
                   <th className="py-3.5 px-6">Produk &amp; Kode</th>
                   <th className="py-3.5 px-4 text-center">Gramatur</th>
-                  <th className="py-3.5 px-4 text-right">Harga Retail</th>
-                  <th className="py-3.5 px-4 text-right">Pajak PPh (0.25%)</th>
-                  <th className="py-3.5 px-6 text-right font-black text-[#1b355a]">Total Beli</th>
+                  <th className="py-3.5 px-6 text-right font-black text-[#1b355a]">Harga Beli</th>
                   <th className="py-3.5 px-6 text-right text-emerald-700">Estimasi Buyback</th>
                   <th className="py-3.5 px-6 text-center">Aksi</th>
                 </tr>
@@ -355,12 +353,6 @@ export function LivePriceBoard({
                       <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded">
                         {p.weight} {p.unit}
                       </span>
-                    </td>
-                    <td className="py-4 px-4 text-right font-medium text-slate-600">
-                      {formatRupiah(p.retail_price)}
-                    </td>
-                    <td className="py-4 px-4 text-right text-xs text-slate-500">
-                      {formatRupiah(p.tax)}
                     </td>
                     <td className="py-4 px-6 text-right font-black text-base text-[#1b355a]">
                       {formatRupiah(p.total_price)}
