@@ -249,7 +249,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
           )}
           {effectiveStatus !== "active" && (
             <Button onClick={() => setIsBulkModalOpen(true)} disabled={isPending} variant="outline" className="px-4 h-9 border-amber-500/40 text-amber-950 bg-amber-50/80 hover:bg-amber-100 hover:text-amber-900 dark:border-amber-500/30 dark:text-amber-300 dark:bg-amber-900/20 font-semibold shadow-sm transition-all">
-              <Zap className="h-4 w-4 mr-1 text-amber-600 fill-amber-500/20" /> Update Massal
+              <Zap className="h-4 w-4 mr-1 text-amber-600 fill-amber-500/20" /> Update Massal (6 Kategori)
             </Button>
           )}
           {effectiveStatus !== "active" && (
@@ -433,7 +433,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
         currentPrices={prices}
         onApply={(newPrices) => {
           setPrices(newPrices);
-          setSuccessMsg("Perubahan harga massal berhasil diterapkan ke draft! Klik 'Simpan Draft' untuk menyimpan.");
+          setSuccessMsg("Kenaikan/penurunan harga 6 kategori berhasil diterapkan ke seluruh varian produk! Silakan periksa kembali dan klik 'Simpan Draft'.");
           setTimeout(() => setSuccessMsg(""), 5000);
         }}
       />
