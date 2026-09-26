@@ -52,11 +52,7 @@ export function StorefrontHeader({
               HARGA HARI INI
             </span>
             <span className="text-slate-200 text-[11px]">
-              Beli: <strong className="text-[#fed65b] font-bold">{formatRupiah(buyPrice)}/gr</strong>
-            </span>
-            <span className="text-slate-400 text-[9px]">•</span>
-            <span className="text-slate-200 text-[11px]">
-              Buyback: <strong className="text-[#fed65b] font-bold">{formatRupiah(buybackPrice)}/gr</strong>
+              Spot Emas 24K: <strong className="text-[#fed65b] font-bold">{formatRupiah(buyPrice)}/gr</strong>
             </span>
           </div>
           <div className="flex items-center gap-2 text-[10px] text-slate-300">
@@ -77,19 +73,9 @@ export function StorefrontHeader({
               HARGA HARI INI
             </span>
             <span className="font-medium text-slate-200">
-              Beli:{" "}
+              Spot Emas 24K:{" "}
               <strong className="text-[#fed65b] font-bold">
                 {formatRupiah(buyPrice)}/gr
-              </strong>{" "}
-              <span className="text-emerald-300 text-[11px] font-semibold">
-                (+0.8%)
-              </span>
-            </span>
-            <span className="text-slate-500">|</span>
-            <span className="font-medium text-slate-200">
-              Buyback:{" "}
-              <strong className="text-[#fed65b] font-bold">
-                {formatRupiah(buybackPrice)}/gr
               </strong>
             </span>
           </div>

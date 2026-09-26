@@ -167,12 +167,12 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </p>
             </div>
 
-            {/* Transparent Dual-Valuation Price Box */}
+            {/* Price Box */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-4">
               <div className="flex items-end justify-between">
                 <div>
                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Harga Beli Hari Ini (1 Keping)
+                    Harga Hari Ini (1 Keping)
                   </span>
                   <div className="text-3xl font-black text-[#1b355a] font-sans mt-0.5">
                     {formatRupiah(unitBuyPrice)}
@@ -183,21 +183,18 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Garansi Buyback
+                  <span className="bg-amber-100/80 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-200 inline-block">
+                    {isSilver ? "Perak 99.9%" : "Emas 24K"}
                   </span>
-                  <div className="text-xl font-bold text-emerald-700 mt-0.5">
-                    {formatRupiah(unitBuybackPrice)}
-                  </div>
-                  <span className="text-[10px] text-slate-400">Pencairan langsung</span>
+                  <span className="text-[10px] text-slate-400 block mt-1">Sesi Aktif Resmi</span>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
-                <span>Spread: <strong>{formatRupiah(unitBuyPrice - unitBuybackPrice)}</strong></span>
+                <span>Standar: <strong>SNI 8887:2020 &amp; LBMA</strong></span>
                 <span className="text-emerald-700 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Likuiditas Terjamin
+                  Keaslian Terjamin
                 </span>
               </div>
             </div>

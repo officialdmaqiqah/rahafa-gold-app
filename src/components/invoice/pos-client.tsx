@@ -144,20 +144,14 @@ export function PosClient({ products: initialProducts, customers, hasMissingToda
   
   const defaultPrice = useMemo(() => {
     if (!selectedProduct || !selectedProduct.price) return 0;
-    if (transactionType === "sale_reseller") {
-      return Number(selectedProduct.price.reseller_sell_price) || 0;
-    }
     return Number(selectedProduct.price.retail_sell_price) || 0;
-  }, [selectedProduct, transactionType]);
+  }, [selectedProduct]);
 
   const isPriceMissingForDate = useMemo(() => {
     if (!selectedProduct) return false;
     if (!selectedProduct.price) return true;
-    if (transactionType === "sale_reseller") {
-      return !selectedProduct.price.reseller_sell_price || Number(selectedProduct.price.reseller_sell_price) <= 0;
-    }
     return !selectedProduct.price.retail_sell_price || Number(selectedProduct.price.retail_sell_price) <= 0;
-  }, [selectedProduct, transactionType]);
+  }, [selectedProduct]);
 
   const handleCustomerSelect = (val: string | null) => {
     if (!val) return;
@@ -206,15 +200,6 @@ export function PosClient({ products: initialProducts, customers, hasMissingToda
         return;
       }
       isManualPrice = true;
-    }
-
-    // Validasi harga reseller
-    if (transactionType === "sale_reseller") {
-      const resellerPrice = Number(selectedProduct.price?.reseller_sell_price) || 0;
-      if (resellerPrice <= 0 && unitPrice <= 0) {
-        setErrorMsg("Harga reseller belum diatur untuk tanggal ini. Update harga dulu sebelum transaksi reseller.");
-        return;
-      }
     }
 
     if (unitPrice <= 0) {
@@ -530,7 +515,7 @@ export function PosClient({ products: initialProducts, customers, hasMissingToda
                       <SelectContent>
                         {[...currentProducts].sort((a,b) => (a.name||'').localeCompare(b.name||'')).map(p => {
                           const titleName = p.name ? p.name.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase()) : "";
-                          const hasPrice = p.price && (transactionType === "sale_reseller" ? p.price.reseller_sell_price > 0 : p.price.retail_sell_price > 0);
+                          const hasPrice = p.price && p.price.retail_sell_price > 0;
                           return (
                             <SelectItem key={p.id} value={p.id}>
                               {titleName} ({p.weight}{p.unit}) {!hasPrice ? "- (Harga Belum Ada pada Tanggal Ini)" : ""} - [Kode: {p.item_code}]
@@ -574,13 +559,6 @@ export function PosClient({ products: initialProducts, customers, hasMissingToda
                       Harga untuk tanggal transaksi ini belum tersedia. Update harga tanggal tersebut atau input harga manual dengan otorisasi owner.
                     </p>
                   </div>
-                </div>
-              )}
-
-              {transactionType === "sale_reseller" && selectedProduct && !isPriceMissingForDate && (!selectedProduct.price?.reseller_sell_price || Number(selectedProduct.price.reseller_sell_price) <= 0) && (
-                <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-amber-800 text-xs flex items-center gap-2 mb-3">
-                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-                  <span><strong>Perhatian:</strong> Harga reseller belum diatur di tanggal ini. Update harga dulu sebelum transaksi reseller.</span>
                 </div>
               )}
               

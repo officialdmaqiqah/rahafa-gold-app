@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Search, Save, Copy, CheckCircle, AlertTriangle, Loader2, PlusCircle, Zap } from "lucide-react";
+import { Search, Save, Copy, CheckCircle, Loader2, PlusCircle, Zap } from "lucide-react";
 import { saveDailyPricesDraft, activateDailyPrices, copyPreviousPrices } from "@/app/(dashboard)/harga-harian/actions";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BulkUpdateModal } from "./bulk-update-modal";
@@ -31,8 +30,8 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
   const [isEditingNewSession, setIsEditingNewSession] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   
-  // Local state for form values
-  const [prices, setPrices] = useState<Record<string, { retail: string, reseller: string, buyback: string }>>({});
+  // Local state for form values (only retail is edited, reseller/buyback retained for type compatibility)
+  const [prices, setPrices] = useState<Record<string, { retail: string; reseller?: string; buyback?: string }>>({});
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -43,7 +42,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
 
   useEffect(() => {
     // Initialize prices from props
-    const initial: Record<string, { retail: string, reseller: string, buyback: string }> = {};
+    const initial: Record<string, { retail: string; reseller?: string; buyback?: string }> = {};
     data.forEach(item => {
       initial[item.product.id] = {
         retail: item.price?.retail_sell_price ? String(item.price.retail_sell_price) : "",
@@ -83,14 +82,14 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
     router.push(url.pathname + url.search);
   };
 
-  const handlePriceChange = (productId: string, field: "retail" | "reseller" | "buyback", value: string) => {
+  const handlePriceChange = (productId: string, value: string) => {
     // Only allow numbers
     const cleanValue = value.replace(/\D/g, "");
     setPrices(prev => ({
       ...prev,
       [productId]: {
         ...prev[productId],
-        [field]: cleanValue
+        retail: cleanValue
       }
     }));
   };
@@ -108,19 +107,14 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
       const payload = Object.entries(prices).map(([productId, vals]) => ({
         product_id: productId,
         retail_sell_price: vals.retail ? parseInt(vals.retail) : 0,
-        reseller_sell_price: vals.reseller ? parseInt(vals.reseller) : null,
-        buyback_price: vals.buyback ? parseInt(vals.buyback) : 0,
+        reseller_sell_price: null,
+        buyback_price: null,
       }));
 
       const res = await saveDailyPricesDraft(date, payload);
       if (res.error) throw new Error(res.error);
       
-      const missingResellerCount = Object.values(prices).filter(v => !v.reseller || parseInt(v.reseller) <= 0).length;
-      if (missingResellerCount > 0) {
-        setSuccessMsg(`Draft harga tersimpan! (Catatan: Ada ${missingResellerCount} produk harga reseller belum diisi).`);
-      } else {
-        setSuccessMsg("Draft harga 3-Tier (Umum, Reseller, Buyback) berhasil disimpan!");
-      }
+      setSuccessMsg("Draft Harga Hari Ini berhasil disimpan!");
       setTimeout(() => setSuccessMsg(""), 4000);
     } catch (err: any) {
       setErrorMsg(err.message);
@@ -134,16 +128,12 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
     setErrorMsg("");
     setSuccessMsg("");
     try {
-      // Validasi: retail_sell_price dan buyback_price wajib > 0
+      // Validasi: retail_sell_price wajib > 0
       for (const item of data) {
         const vals = prices[item.product.id];
         const retailVal = vals?.retail ? parseInt(vals.retail) : 0;
         if (retailVal <= 0) {
-          throw new Error(`Harga Umum (Retail) wajib diisi (> 0) untuk produk: ${item.product.name}`);
-        }
-        const buybackVal = vals?.buyback ? parseInt(vals.buyback) : 0;
-        if (buybackVal <= 0) {
-          throw new Error(`Harga Buyback wajib diisi (> 0) untuk produk: ${item.product.name}`);
+          throw new Error(`Harga Hari Ini wajib diisi (> 0) untuk produk: ${item.product.name}`);
         }
       }
 
@@ -151,15 +141,15 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
       const payload = Object.entries(prices).map(([productId, vals]) => ({
         product_id: productId,
         retail_sell_price: vals.retail ? parseInt(vals.retail) : 0,
-        reseller_sell_price: vals.reseller ? parseInt(vals.reseller) : null,
-        buyback_price: vals.buyback ? parseInt(vals.buyback) : 0,
+        reseller_sell_price: null,
+        buyback_price: null,
       }));
       await saveDailyPricesDraft(date, payload);
 
       const res = await activateDailyPrices(date);
       if (res.error) throw new Error(res.error);
       
-      setSuccessMsg("Harga 3-Tier (Umum, Reseller, Buyback) berhasil diaktifkan!");
+      setSuccessMsg("Harga Hari Ini berhasil diaktifkan!");
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err: any) {
       setErrorMsg(err.message);
@@ -173,7 +163,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
     setConfirmDialog({
       isOpen: true,
       title: "Konfirmasi Aktivasi",
-      description: "Aktifkan harga untuk tanggal ini? Setelah aktif, harga dapat digunakan dalam transaksi.",
+      description: "Aktifkan Harga Hari Ini untuk tanggal ini? Setelah aktif, harga dapat digunakan langsung dalam POS invoice.",
       action: "activate"
     });
   };
@@ -259,7 +249,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
           )}
           {effectiveStatus !== "active" && (
             <Button onClick={() => setIsBulkModalOpen(true)} disabled={isPending} variant="outline" className="px-4 h-9 border-amber-500/40 text-amber-950 bg-amber-50/80 hover:bg-amber-100 hover:text-amber-900 dark:border-amber-500/30 dark:text-amber-300 dark:bg-amber-900/20 font-semibold shadow-sm transition-all">
-              <Zap className="h-4 w-4 mr-1 text-amber-600 fill-amber-500/20" /> Update Massal (6 Kategori)
+              <Zap className="h-4 w-4 mr-1 text-amber-600 fill-amber-500/20" /> Update Massal
             </Button>
           )}
           {effectiveStatus !== "active" && (
@@ -355,7 +345,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
         >
           {data.map((item) => {
             const p = item.product;
-            const vals = prices[p.id] || { retail: "", reseller: "", buyback: "" };
+            const vals = prices[p.id] || { retail: "" };
             
             return (
               <AccordionItem value={p.id} key={p.id} className={`border bg-card text-card-foreground shadow-sm rounded-lg overflow-hidden ${effectiveStatus === "active" ? "opacity-75 bg-muted/30" : ""}`}>
@@ -364,12 +354,8 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
                     <div>
                       <div className="text-base font-semibold text-[#294376] dark:text-white">{p.name}</div>
                       <div className="text-xs font-normal text-slate-500">{p.item_code} • {p.weight} {p.unit}</div>
-                      <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 flex flex-wrap gap-x-2">
-                        <span>Umum: <strong className="text-slate-900 dark:text-white">{vals.retail ? `Rp ${formatRupiah(vals.retail)}` : '-'}</strong></span>
-                        <span>•</span>
-                        <span>Reseller: <strong className={vals.reseller ? "text-indigo-700 dark:text-indigo-400" : "text-amber-600"}>{vals.reseller ? `Rp ${formatRupiah(vals.reseller)}` : '(Kosong)'}</strong></span>
-                        <span>•</span>
-                        <span>Buyback: <strong className="text-emerald-700 dark:text-emerald-400">{vals.buyback ? `Rp ${formatRupiah(vals.buyback)}` : '-'}</strong></span>
+                      <div className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                        <span>Harga Hari Ini: <strong className="text-slate-900 dark:text-white font-bold">{vals.retail ? `Rp ${formatRupiah(vals.retail)}` : '(Belum Diatur)'}</strong></span>
                       </div>
                     </div>
                     <Badge variant={p.category === 'gold' ? 'default' : 'secondary'} className="text-xs shrink-0">
@@ -379,11 +365,11 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4 pt-3 border-t space-y-3">
                   <div className="grid grid-cols-1 gap-3">
-                    {/* Retail Price */}
+                    {/* Single Input: Harga Hari Ini */}
                     <div>
                       <div className="flex justify-between items-center mb-1">
                         <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                          Harga Umum (Retail) <span className="text-red-500">*</span>
+                          Harga Hari Ini <span className="text-red-500">*</span>
                         </label>
                         {!vals.retail && <span className="text-[10px] text-red-500 font-medium">Wajib diisi</span>}
                       </div>
@@ -392,51 +378,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
                         <Input 
                           className={`pl-8 text-right font-medium text-sm ${!vals.retail ? 'border-red-300 bg-red-50/20' : ''}`}
                           value={formatRupiah(vals.retail)}
-                          onChange={(e) => handlePriceChange(p.id, "retail", e.target.value)}
-                          disabled={effectiveStatus === "active"}
-                          placeholder="0"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Reseller Price */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-xs font-semibold text-indigo-700 dark:text-indigo-400">
-                          Harga Reseller
-                        </label>
-                        {!vals.reseller && (
-                          <span className="text-[10px] text-amber-600 font-semibold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                            Harga reseller belum diisi
-                          </span>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <span className="absolute left-3 top-2 text-muted-foreground text-xs font-medium">Rp</span>
-                        <Input 
-                          className="pl-8 text-right font-medium text-sm border-indigo-200 focus:border-indigo-400"
-                          value={formatRupiah(vals.reseller)}
-                          onChange={(e) => handlePriceChange(p.id, "reseller", e.target.value)}
-                          disabled={effectiveStatus === "active"}
-                          placeholder="Opsional (Kosongkan jika sama/belum diatur)"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Buyback Price */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                          Harga Buyback <span className="text-red-500">*</span>
-                        </label>
-                        {!vals.buyback && <span className="text-[10px] text-red-500 font-medium">Wajib diisi</span>}
-                      </div>
-                      <div className="relative">
-                        <span className="absolute left-3 top-2 text-muted-foreground text-xs font-medium">Rp</span>
-                        <Input 
-                          className={`pl-8 text-right font-medium text-sm border-emerald-200 focus:border-emerald-400 ${!vals.buyback ? 'border-red-300 bg-red-50/20' : ''}`}
-                          value={formatRupiah(vals.buyback)}
-                          onChange={(e) => handlePriceChange(p.id, "buyback", e.target.value)}
+                          onChange={(e) => handlePriceChange(p.id, e.target.value)}
                           disabled={effectiveStatus === "active"}
                           placeholder="0"
                         />
@@ -483,7 +425,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
         </DialogContent>
       </Dialog>
 
-      {/* Bulk Category Update Modal */}
+      {/* Bulk Update Modal */}
       <BulkUpdateModal
         isOpen={isBulkModalOpen}
         onClose={() => setIsBulkModalOpen(false)}
@@ -491,7 +433,7 @@ export function DailyPricesClient({ date, data, search, category, allCount, sess
         currentPrices={prices}
         onApply={(newPrices) => {
           setPrices(newPrices);
-          setSuccessMsg("Kenaikan/penurunan harga 6 kategori berhasil diterapkan ke seluruh varian produk! Silakan periksa kembali dan klik 'Simpan Draft'.");
+          setSuccessMsg("Perubahan harga massal berhasil diterapkan ke draft! Klik 'Simpan Draft' untuk menyimpan.");
           setTimeout(() => setSuccessMsg(""), 5000);
         }}
       />

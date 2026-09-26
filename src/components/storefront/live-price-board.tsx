@@ -150,7 +150,7 @@ export function LivePriceBoard({
 
               <div className="space-y-4">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                  <div className="text-xs font-medium text-slate-300">Harga Beli Retail (1 Gram)</div>
+                  <div className="text-xs font-medium text-slate-300">Harga Hari Ini (Spot 1 Gram)</div>
                   <div className="text-3xl font-black text-[#fed65b] mt-1 font-sans">
                     {formatRupiah(baseBuyPerGram)}
                   </div>
@@ -159,22 +159,21 @@ export function LivePriceBoard({
                   </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                  <div className="text-xs font-medium text-slate-300">Garansi Harga Buyback (1 Gram)</div>
-                  <div className="text-2xl font-black text-white mt-1 font-sans">
-                    {formatRupiah(baseBuybackPerGram)}
+                <div className="bg-white/5 border border-white/10 rounded-xl p-3.5 space-y-1.5">
+                  <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-amber-400" />
+                    <span>Jaminan Kemurnian &amp; Legalitas Resmi</span>
                   </div>
-                  <div className="text-[11px] text-emerald-300 mt-0.5 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Pencairan Langsung / Transfer Hari yang Sama
+                  <div className="text-[11px] text-slate-300 leading-relaxed">
+                    Setiap logam mulia Rahafa Gold bersertifikat resmi LBMA &amp; SNI 8887:2020.
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between text-xs text-slate-300">
-              <span>Spread: <strong>{formatRupiah(baseBuyPerGram - baseBuybackPerGram)}</strong></span>
-              <span className="text-[#fed65b] font-semibold">Kompetitif &amp; Terbuka</span>
+              <span>Status Pasar: <strong className="text-emerald-300">Sesi Aktif</strong></span>
+              <span className="text-[#fed65b] font-semibold">Harga Transparan &amp; Terbuka</span>
             </div>
           </div>
 
@@ -336,17 +335,15 @@ export function LivePriceBoard({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Harga Beli</span>
-                    <strong className="text-[#1b355a] font-black text-sm">{formatRupiah(p.total_price)}</strong>
-                    <span className="text-[9px] text-slate-400 block">Harga Resmi Aktif</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Harga Hari Ini</span>
+                    <strong className="text-[#1b355a] font-black text-base">{formatRupiah(p.total_price)}</strong>
+                    <span className="text-[9px] text-slate-500 block">Harga Resmi Sesi Aktif</span>
                   </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Est. Buyback</span>
-                    <strong className="text-emerald-700 font-bold text-sm">{formatRupiah(p.buyback_price)}</strong>
-                    <span className="text-[9px] text-emerald-600 block">Pencairan Cepat</span>
-                  </div>
+                  <span className="bg-amber-100/80 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200">
+                    24K Murni
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2 pt-1">
@@ -377,8 +374,7 @@ export function LivePriceBoard({
                 <tr>
                   <th className="py-3.5 px-6">Produk &amp; Kode</th>
                   <th className="py-3.5 px-4 text-center">Gramatur</th>
-                  <th className="py-3.5 px-6 text-right font-black text-[#1b355a]">Harga Beli</th>
-                  <th className="py-3.5 px-6 text-right text-emerald-700">Estimasi Buyback</th>
+                  <th className="py-3.5 px-6 text-right font-black text-[#1b355a]">Harga Hari Ini</th>
                   <th className="py-3.5 px-6 text-center">Aksi</th>
                 </tr>
               </thead>
@@ -405,9 +401,6 @@ export function LivePriceBoard({
                     </td>
                     <td className="py-4 px-6 text-right font-black text-base text-[#1b355a]">
                       {formatRupiah(p.total_price)}
-                    </td>
-                    <td className="py-4 px-6 text-right font-bold text-emerald-700">
-                      {formatRupiah(p.buyback_price)}
                     </td>
                     <td className="py-4 px-6 text-center">
                       <div className="flex items-center justify-center gap-2">

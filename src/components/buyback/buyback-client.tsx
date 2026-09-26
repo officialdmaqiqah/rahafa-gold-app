@@ -39,11 +39,6 @@ export function BuybackClient({ products, customers }: BuybackClientProps) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
-  
-  const defaultPrice = useMemo(() => {
-    if (!selectedProduct || !selectedProduct.price) return 0;
-    return Number(selectedProduct.price.buyback_price) || 0;
-  }, [selectedProduct]);
 
   const handleCustomerSelect = (val: string | null) => {
     if (!val) return;
@@ -59,7 +54,10 @@ export function BuybackClient({ products, customers }: BuybackClientProps) {
   };
 
   const handleProductSelect = (val: string | null) => {
-    if (val) setSelectedProductId(val);
+    if (val) {
+      setSelectedProductId(val);
+      setCustomPriceStr("");
+    }
   };
 
   const addToCart = () => {
@@ -67,14 +65,11 @@ export function BuybackClient({ products, customers }: BuybackClientProps) {
     const qty = parseInt(qtyStr);
     if (isNaN(qty) || qty <= 0) return;
 
-    let unitPrice = defaultPrice;
-    if (customPriceStr) {
-      const parsed = parseInt(customPriceStr.replace(/\D/g, ""));
-      if (!isNaN(parsed)) unitPrice = parsed;
-    }
+    const parsed = parseInt(customPriceStr.replace(/\D/g, ""));
+    const unitPrice = !isNaN(parsed) ? parsed : 0;
 
     if (unitPrice <= 0) {
-      setErrorMsg("Harga buyback belum diatur di Harga Hari Ini. Update harga dulu sebelum buyback.");
+      setErrorMsg("Harga buyback wajib diisi dan harus lebih dari Rp 0.");
       return;
     }
 
@@ -134,7 +129,7 @@ export function BuybackClient({ products, customers }: BuybackClientProps) {
     // Validasi harga buyback di keranjang
     for (const item of cart) {
       if (!item.unitPrice || item.unitPrice <= 0) {
-        setErrorMsg(`Harga buyback untuk "${item.name}" belum valid atau 0. Update harga dulu sebelum buyback.`);
+        setErrorMsg(`Harga buyback untuk "${item.name}" harus lebih dari Rp 0.`);
         return;
       }
     }
@@ -253,25 +248,19 @@ export function BuybackClient({ products, customers }: BuybackClientProps) {
 
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-1">
-                  <Label>Harga Beli Satuan (Rp) - Wajib Diisi</Label>
+                  <Label>Harga Buyback / Modal Beli (Rp) <span className="text-red-500">*</span></Label>
                 </div>
                 <Input 
-                  value={customPriceStr !== "" ? customPriceStr : (selectedProductId && defaultPrice > 0 ? formatRupiah(defaultPrice) : "")} 
+                  value={customPriceStr} 
                   onChange={e => {
                     const digits = e.target.value.replace(/\D/g, "");
                     setCustomPriceStr(digits ? formatRupiah(parseInt(digits, 10)) : "");
                   }}
-                  placeholder="Harga Otomatis / Wajib Diisi"
+                  placeholder="Masukkan harga buyback"
+                  className="font-medium"
                 />
               </div>
             </div>
-
-            {selectedProduct && (!selectedProduct.price?.buyback_price || Number(selectedProduct.price.buyback_price) <= 0) && (
-              <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-amber-800 text-xs flex items-center gap-2 mb-3">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-                <span><strong>Perhatian:</strong> Harga buyback belum diatur di Harga Hari Ini. Update harga dulu sebelum buyback.</span>
-              </div>
-            )}
 
             <div className="mt-auto pt-4">
               <Button onClick={addToCart} size="lg" disabled={!selectedProductId} className="w-full font-bold h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground transition-colors shadow-sm">

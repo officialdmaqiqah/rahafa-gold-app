@@ -217,16 +217,8 @@ export async function checkout(payload: any, overrideFlag: boolean, ownerPin?: s
     throw new Error("Alasan transaksi susulan wajib diisi.");
   }
 
-  // 2. Validasi harga reseller & harga satuan
+  // 2. Validasi harga satuan
   const hasManualPrice = Boolean(manualPriceOverride || items.some((it: any) => it.isManualPrice));
-
-  if (transactionType === "sale_reseller") {
-    for (const item of items) {
-      if (!item.unitPrice || item.unitPrice <= 0) {
-        throw new Error(`Harga reseller untuk "${item.name}" belum valid atau 0. Update harga dulu sebelum transaksi reseller.`);
-      }
-    }
-  }
 
   for (const item of items) {
     if (!item.unitPrice || item.unitPrice <= 0) {

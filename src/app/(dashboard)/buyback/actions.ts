@@ -42,7 +42,7 @@ export async function checkoutBuyback(payload: any) {
   // Validasi harga buyback
   for (const item of items) {
     if (!item.unitPrice || item.unitPrice <= 0) {
-      return { error: `Harga buyback untuk "${item.name}" belum valid atau 0. Update harga dulu sebelum buyback.` };
+      return { error: `Harga buyback untuk "${item.name}" harus lebih dari Rp 0.` };
     }
   }
   
