@@ -115,6 +115,29 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       });
     }
 
+    // Fallback: If any active products are missing in this session, lookup their latest active price
+    const missingProductIds = (rawProducts || [])
+      .filter((p) => !priceMap.has(p.id) || !priceMap.get(p.id)?.retail_sell_price)
+      .map((p) => p.id);
+
+    if (missingProductIds.length > 0) {
+      const { data: fallbackPrices } = await supabase
+        .from("daily_prices")
+        .select("*")
+        .eq("status", "active")
+        .in("product_id", missingProductIds)
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (fallbackPrices && fallbackPrices.length > 0) {
+        fallbackPrices.forEach((p) => {
+          if (!priceMap.has(p.product_id) || !priceMap.get(p.product_id)?.retail_sell_price) {
+            priceMap.set(p.product_id, p);
+          }
+        });
+      }
+    }
+
     // 3. Map products with real prices and real images
     const products: StorefrontProduct[] = (rawProducts || [])
       .map((p) => {
