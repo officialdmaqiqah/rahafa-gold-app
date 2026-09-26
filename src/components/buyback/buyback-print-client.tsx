@@ -3,10 +3,22 @@
 import { useRef, useState } from "react";
 import { formatRupiah } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, MessageSquare, AlertCircle, ArrowLeft, Loader2, XCircle } from "lucide-react";
+import { Printer, Download, MessageSquare, AlertCircle, AlertTriangle, ArrowLeft, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { cancelBuyback } from "@/app/(dashboard)/buyback/actions";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { DEFAULT_STORE_PHONE } from "@/lib/constants";
 
 export function BuybackPrintClient({ transaction, settings }: { transaction: any, settings?: any }) {
   const printRef = useRef<HTMLDivElement>(null);
@@ -14,17 +26,20 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
   
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState("");
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelPin, setCancelPin] = useState("");
 
   const storeName = settings?.store_name || "RAHAFA";
   const tagline = settings?.tagline || "EMAS & SILVER";
   const logoUrl = settings?.logo_url || null;
+  const storePhone = settings?.phone || DEFAULT_STORE_PHONE;
 
   const handlePrint = () => {
     window.print();
   };
 
   const handleWA = () => {
-    const text = `*NOTA BUYBACK - ${storeName}*\nNo: ${transaction.transaction_number}\nTanggal: ${new Date(transaction.transaction_date).toLocaleDateString("id-ID")}\n\nTerima kasih Bapak/Ibu ${transaction.customers?.name} telah mempercayakan penjualan perhiasan/logam mulia kepada kami.\n\nTotal Pembayaran: Rp ${formatRupiah(transaction.total_amount)}\n\nKeterangan: ${transaction.notes || "-"}\n\nSemoga berkah selalu.`;
+    const text = `*NOTA BUYBACK - ${storeName}*\nNo: ${transaction.transaction_number}\nTanggal: ${new Date(transaction.transaction_date).toLocaleDateString("id-ID")}\n\nTerima kasih Bapak/Ibu ${transaction.customers?.name} telah mempercayakan penjualan perhiasan/logam mulia kepada kami di ${storeName} (WA: ${storePhone}).\n\nTotal Pembayaran: Rp ${formatRupiah(transaction.total_amount)}\n\nKeterangan: ${transaction.notes || "-"}\n\nSemoga berkah selalu.`;
     const phone = transaction.customers?.phone;
     if (phone) {
       // format phone to 62...
@@ -38,20 +53,27 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
     }
   };
 
-  const handleCancel = async () => {
-    if (confirm("Yakin ingin membatalkan transaksi buyback ini? Stok yang masuk dari buyback ini akan ikut terhapus.")) {
-      setIsCancelling(true);
-      setCancelError("");
-      const res = await cancelBuyback(transaction.id);
-      setIsCancelling(false);
-      if (res.error) {
-        setCancelError(res.error);
-        alert(res.error);
-      } else {
-        alert("Buyback berhasil dibatalkan.");
-        // Redirect back to buyback home or refresh
-        router.refresh();
-      }
+  const handleOpenCancel = () => {
+    setCancelPin("");
+    setCancelError("");
+    setCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancelPin || cancelPin.trim() === "") {
+      setCancelError("PIN Owner wajib diisi untuk membatalkan buyback.");
+      return;
+    }
+    setIsCancelling(true);
+    setCancelError("");
+    const res = await cancelBuyback(transaction.id, cancelPin);
+    setIsCancelling(false);
+    if (res?.error) {
+      setCancelError(res.error);
+    } else {
+      setCancelModalOpen(false);
+      setCancelPin("");
+      router.refresh();
     }
   };
 
@@ -72,7 +94,7 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
             <MessageSquare className="mr-2 h-4 w-4" /> Kirim ke WA
           </Button>
           {transaction.status === "final" && (
-            <Button variant="destructive" onClick={handleCancel} disabled={isCancelling}>
+            <Button variant="destructive" onClick={handleOpenCancel} disabled={isCancelling}>
               {isCancelling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
               Batalkan Buyback
             </Button>
@@ -110,6 +132,7 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
           )}
           <h1 className="text-3xl font-black tracking-tighter">{storeName}</h1>
           <h2 className="text-xl font-bold tracking-widest text-muted-foreground">{tagline}</h2>
+          <p className="text-xs font-medium text-slate-700 mt-1">Telp / WA: {storePhone}</p>
         </div>
 
         <div className="text-center border-y-2 border-black py-2 mb-6">
@@ -224,6 +247,53 @@ export function BuybackPrintClient({ transaction, settings }: { transaction: any
           @page { size: auto;  margin: 0mm; }
         }
       `}} />
+
+      {/* Dialog Konfirmasi Batal Buyback dengan PIN Owner */}
+      <Dialog open={cancelModalOpen} onOpenChange={setCancelModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center justify-center gap-2 text-xl">
+              <AlertTriangle className="h-6 w-6" />
+              Otorisasi Pembatalan Buyback
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2 text-base">
+              Yakin ingin membatalkan transaksi buyback ini? Stok yang masuk dari buyback ini akan dihapus. Masukkan <strong>PIN Owner</strong> untuk mengonfirmasi.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 mt-2 px-2">
+            <Label className="text-xs font-semibold text-slate-700">
+              PIN Owner <span className="text-red-500">*</span>
+            </Label>
+            <Input 
+              type="password" 
+              maxLength={10} 
+              placeholder="Masukkan PIN Owner" 
+              value={cancelPin} 
+              onChange={e => { setCancelPin(e.target.value); setCancelError(""); }}
+              className="text-center font-bold tracking-widest text-lg h-11 border-red-300 focus:border-red-500 bg-white"
+            />
+            {cancelError && (
+              <p className="text-xs text-red-600 font-semibold text-center">{cancelError}</p>
+            )}
+          </div>
+
+          <DialogFooter className="mt-4 flex-col sm:flex-row gap-3 sm:justify-center px-6 pb-6 border-none bg-transparent">
+            <Button variant="outline" onClick={() => setCancelModalOpen(false)} disabled={isCancelling} className="w-full sm:w-32 rounded-full h-11 border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold shadow-sm">
+              Kembali
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleConfirmCancel} 
+              disabled={isCancelling || !cancelPin}
+              className="w-full sm:w-auto rounded-full h-11 bg-red-600 text-white hover:bg-red-700 font-semibold shadow-sm"
+            >
+              {isCancelling ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+              Batalkan Buyback
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

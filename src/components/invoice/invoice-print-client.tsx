@@ -6,6 +6,8 @@ import { formatRupiah } from "@/lib/utils";
 import { Printer, Download, MessageCircle, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { DEFAULT_STORE_PHONE } from "@/lib/constants";
+
 interface InvoicePrintClientProps {
   transaction: any;
   items: any[];
@@ -17,7 +19,7 @@ export function InvoicePrintClient({ transaction, items, settings }: InvoicePrin
   
   const storeName = settings?.store_name || "RAHAFA";
   const tagline = settings?.tagline || "EMAS & SILVER";
-  const phone = settings?.phone || "0853-8410-9496";
+  const phone = settings?.phone || DEFAULT_STORE_PHONE;
   const footerText = settings?.invoice_footer || "Barang yang sudah dibeli dapat dijual kembali sesuai dengan ketentuan toko.";
   const logoUrl = settings?.logo_url || null;
 
@@ -62,8 +64,22 @@ export function InvoicePrintClient({ transaction, items, settings }: InvoicePrin
         </div>
       </div>
 
+      {transaction.status === "cancelled" && (
+        <div className="print:hidden p-4 bg-red-100 text-red-800 border border-red-300 rounded-md text-center font-bold text-base">
+          INVOICE INI TELAH DIBATALKAN (VOID)
+        </div>
+      )}
+
       {/* Invoice Paper */}
-      <div className="bg-white p-8 md:p-12 border shadow-lg print:shadow-none print:border-none print:p-0 text-black">
+      <div className="bg-white p-8 md:p-12 border shadow-lg print:shadow-none print:border-none print:p-0 text-black relative overflow-hidden">
+        {/* Watermark DIBATALKAN for screen and print */}
+        {transaction.status === "cancelled" && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none z-10 select-none">
+            <span className="text-6xl sm:text-8xl font-black text-red-600 rotate-[-30deg] border-8 border-red-600 p-8 rounded-3xl tracking-widest">
+              DIBATALKAN
+            </span>
+          </div>
+        )}
         
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-8 border-b-2 border-black pb-6">
@@ -81,6 +97,20 @@ export function InvoicePrintClient({ transaction, items, settings }: InvoicePrin
           <div className="space-y-1">
             <p><span className="font-semibold inline-block w-24">No Invoice</span>: {transaction.transaction_number}</p>
             <p><span className="font-semibold inline-block w-24">Tanggal</span>: {tDate}</p>
+            {(transaction.is_backdated || transaction.notes?.includes("TRANSAKSI SUSULAN")) && (
+              <div className="print:hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-2.5 py-1 mt-1">
+                <span className="font-semibold">Status: Transaksi Susulan</span> • Diinput pada: {new Date(transaction.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                {transaction.backdate_reason && <span> (Alasan: {transaction.backdate_reason})</span>}
+              </div>
+            )}
+            {transaction.status === "cancelled" && (
+              <p>
+                <span className="font-semibold inline-block w-24">Status</span>:{" "}
+                <span className="font-bold text-red-600 px-2 py-0.5 bg-red-100 border border-red-300 rounded text-xs">
+                  DIBATALKAN (VOID)
+                </span>
+              </p>
+            )}
             {transaction.notes && (
               <p><span className="font-semibold inline-block w-24">Catatan</span>: {transaction.notes}</p>
             )}

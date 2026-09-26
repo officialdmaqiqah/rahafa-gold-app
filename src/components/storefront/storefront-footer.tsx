@@ -116,12 +116,12 @@ export function StorefrontFooter() {
             <div className="pt-1">
               <span className="text-xs text-slate-400 block">Layanan Konsultasi &amp; Order:</span>
               <a
-                href="https://wa.me/6285384109496"
+                href="https://wa.me/6285188071133"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-bold text-amber-300 hover:underline"
               >
-                +62 853-8410-9496
+                +62 851-8807-1133
               </a>
               <p className="text-[11px] text-slate-400 mt-0.5">
                 Senin – Sabtu: 09:00 – 17:00 WIB

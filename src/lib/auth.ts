@@ -1,5 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
+import bcrypt from "bcryptjs";
+import { supabase } from "@/lib/supabase";
 
 const secretKey = process.env.JWT_SECRET || "default_rahafa_secret_key_12345";
 const key = new TextEncoder().encode(secretKey);
@@ -79,3 +81,38 @@ export async function verifySession() {
 
   return { isAuth: true, userId: payload.userId, role: payload.role };
 }
+
+export async function verifyOwnerPin(pin: string): Promise<{ valid: boolean; error?: string }> {
+  if (!pin || pin.trim() === "") {
+    return { valid: false, error: "PIN Owner wajib diisi" };
+  }
+
+  // 1. Cek settings apakah owner_override_pin_hash sudah diatur
+  const { data: settings } = await supabase
+    .from("settings")
+    .select("owner_override_pin_hash")
+    .limit(1)
+    .single();
+
+  if (settings?.owner_override_pin_hash) {
+    const isValid = await bcrypt.compare(pin.trim(), settings.owner_override_pin_hash);
+    if (isValid) return { valid: true };
+  }
+
+  // 2. Fallback: cek PIN user dengan role 'owner'
+  const { data: ownerUser } = await supabase
+    .from("users")
+    .select("pin_hash")
+    .eq("role", "owner")
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+
+  if (ownerUser?.pin_hash) {
+    const isValid = await bcrypt.compare(pin.trim(), ownerUser.pin_hash);
+    if (isValid) return { valid: true };
+  }
+
+  return { valid: false, error: "PIN Owner salah. Otorisasi ditolak." };
+}
+

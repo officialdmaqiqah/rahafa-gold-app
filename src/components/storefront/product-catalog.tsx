@@ -42,7 +42,7 @@ export function ProductCatalog({ products = [] }: ProductCatalogProps) {
     const text = encodeURIComponent(
       `Halo Rahafa Gold, saya tertarik memesan produk:\n• ${product.name} (${product.weight}${product.unit})\n• Kode: ${product.item_code}\n• Harga Hari Ini: ${formatRupiah(product.total_price)}\n\nApakah stok masih tersedia?`
     );
-    return `https://wa.me/6285384109496?text=${text}`;
+    return `https://wa.me/6285188071133?text=${text}`;
   };
 
   return (

@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 import { verifySession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
+import { DEFAULT_STORE_PHONE } from "@/lib/constants";
+
 export async function getSettings() {
   const { data, error } = await supabase.from("settings").select("*").limit(1).single();
   
@@ -12,7 +14,7 @@ export async function getSettings() {
     const defaultSettings = {
       store_name: "RAHAFA",
       tagline: "EMAS & SILVER",
-      phone: "0853-8410-9496",
+      phone: DEFAULT_STORE_PHONE,
       invoice_prefix: "INV",
       buyback_prefix: "BB",
       minimum_margin_amount: 0,

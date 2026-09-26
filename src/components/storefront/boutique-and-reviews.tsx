@@ -174,7 +174,7 @@ export function BoutiqueAndReviews() {
 
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-amber-400 flex-shrink-0" />
-                <span>Layanan Pelanggan WhatsApp: +62 853-8410-9496</span>
+                <span>Layanan Pelanggan WhatsApp: +62 851-8807-1133</span>
               </div>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function BoutiqueAndReviews() {
               </p>
             </div>
             <a
-              href="https://wa.me/6285384109496?text=Halo%20Rahafa%20Gold,%20saya%20ingin%20menjadwalkan%20kunjungan%20ke%20butik%20resmi."
+              href="https://wa.me/6285188071133?text=Halo%20Rahafa%20Gold,%20saya%20ingin%20menjadwalkan%20kunjungan%20ke%20butik%20resmi."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#d99b00] to-[#f2ca50] hover:from-[#c68a00] hover:to-[#e2b83a] text-[#1a1200] font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2"

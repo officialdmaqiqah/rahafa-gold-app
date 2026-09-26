@@ -58,25 +58,41 @@ export function LaporanClient() {
 
   const exportCSV = () => {
     if (activeTab === "transaksi" && reportData?.itemsExport) {
+      if (reportData.itemsExport.length === 0) {
+        alert("Tidak ada data transaksi untuk diekspor");
+        return;
+      }
       const headers = Object.keys(reportData.itemsExport[0] || {}).join(",");
-      const rows = reportData.itemsExport.map((row: any) => Object.values(row).join(",")).join("\\n");
-      const csv = `${headers}\\n${rows}`;
-      downloadFile(csv, `Laporan_Transaksi_${startDate}_${endDate}.csv`, "text/csv");
+      const rows = reportData.itemsExport.map((row: any) => 
+        Object.values(row).map((val: any) => `"${String(val ?? '').replace(/"/g, '""')}"`).join(",")
+      ).join("\n");
+      const csv = `\uFEFF${headers}\n${rows}`;
+      downloadFile(csv, `Laporan_Transaksi_${startDate}_${endDate}.csv`, "text/csv;charset=utf-8;");
     } else if (activeTab === "stok" && stockData?.stocks) {
+      if (stockData.stocks.length === 0) {
+        alert("Tidak ada data stok untuk diekspor");
+        return;
+      }
       const isKasir = stockData.role === "kasir";
       const headers = isKasir 
-        ? "Produk,Kode,Gramasi,Satuan,Qty Stok,Harga Umum,Harga Reseller,Harga Buyback,Status"
-        : "Produk,Kode,Gramasi,Satuan,Qty Stok,Total Modal,Harga Umum,Harga Reseller,Harga Buyback,Potensi Profit Umum,Status";
+        ? "Produk,Kode,Gramasi,Satuan,Qty Total,Qty Ready,Qty Hold,Harga Umum,Harga Reseller,Harga Buyback,Status"
+        : "Produk,Kode,Gramasi,Satuan,Qty Total,Qty Ready,Qty Hold,Total Modal,Harga Umum,Harga Reseller,Harga Buyback,Potensi Profit Umum,Status";
       
       const rows = stockData.stocks.map((s: any) => {
-        if (isKasir) {
-          return `${s.name},${s.code},${s.weight},${s.unit},${s.total_qty},${s.prices.retail_sell_price},${s.prices.reseller_sell_price},${s.prices.buyback_price},${s.has_hold ? "HOLD" : "Aman"}`;
-        } else {
-          return `${s.name},${s.code},${s.weight},${s.unit},${s.total_qty},${s.total_modal},${s.prices.retail_sell_price},${s.prices.reseller_sell_price},${s.prices.buyback_price},${s.pot_profit_umum},${s.has_hold ? "HOLD" : "Aman"}`;
-        }
-      }).join("\\n");
-      const csv = `${headers}\\n${rows}`;
-      downloadFile(csv, `Valuasi_Stok_${new Date().toLocaleDateString('en-CA')}.csv`, "text/csv");
+        const fields = isKasir ? [
+          `"${s.name}"`, `"${s.code}"`, s.weight, s.unit, s.total_qty, s.qty_ready || 0, s.qty_hold || 0,
+          s.prices.retail_sell_price, s.prices.reseller_sell_price, s.prices.buyback_price,
+          s.has_hold ? "HOLD" : "Aman"
+        ] : [
+          `"${s.name}"`, `"${s.code}"`, s.weight, s.unit, s.total_qty, s.qty_ready || 0, s.qty_hold || 0,
+          s.total_modal,
+          s.prices.retail_sell_price, s.prices.reseller_sell_price, s.prices.buyback_price,
+          s.pot_profit_umum, s.has_hold ? "HOLD" : "Aman"
+        ];
+        return fields.join(",");
+      }).join("\n");
+      const csv = `\uFEFF${headers}\n${rows}`;
+      downloadFile(csv, `Valuasi_Stok_${new Date().toLocaleDateString('en-CA')}.csv`, "text/csv;charset=utf-8;");
     }
   };
 
@@ -247,7 +263,17 @@ export function LaporanClient() {
                           {reportData.transactions.map((trx: any) => (
                             <tr key={trx.id}>
                               <td className="p-3">
-                                <div className="font-medium">{trx.transaction_number}</div>
+                                <div className="font-medium flex items-center gap-1.5 flex-wrap">
+                                  <span>{trx.transaction_number}</span>
+                                  {trx.is_backdated && (
+                                    <span 
+                                      title={`Diinput pada: ${new Date(trx.created_at).toLocaleString('id-ID')}${trx.backdate_reason ? ` • Alasan: ${trx.backdate_reason}` : ''}`}
+                                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 cursor-help"
+                                    >
+                                      Susulan
+                                    </span>
+                                  )}
+                                </div>
                                 <div className="text-xs text-muted-foreground">
                                   {trx.transaction_type === 'sale_general' ? 'Jual Umum' : trx.transaction_type === 'sale_reseller' ? 'Reseller' : 'Buyback'}
                                 </div>
@@ -327,7 +353,14 @@ export function LaporanClient() {
                             <div className="font-medium">{s.name}</div>
                             <div className="text-xs text-muted-foreground">{s.code} - {s.weight}{s.unit}</div>
                           </td>
-                          <td className="p-3 text-center font-bold text-lg">{s.total_qty}</td>
+                          <td className="p-3 text-center font-bold text-lg">
+                            <div>{s.total_qty}</div>
+                            {s.qty_hold > 0 && (
+                              <div className="text-[10px] font-normal text-slate-500 whitespace-nowrap">
+                                Ready: {s.qty_ready} | Hold: {s.qty_hold}
+                              </div>
+                            )}
+                          </td>
                           {stockData.role !== "kasir" && <td className="p-3 text-right">Rp {formatRupiah(s.total_modal)}</td>}
                           <td className="p-3 text-right text-blue-700 bg-blue-50/30">Rp {formatRupiah(s.prices.retail_sell_price)}</td>
                           <td className="p-3 text-right text-indigo-700 bg-indigo-50/30">Rp {formatRupiah(s.prices.reseller_sell_price)}</td>

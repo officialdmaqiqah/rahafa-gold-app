@@ -102,7 +102,7 @@ export function LivePriceBoard({
     const text = encodeURIComponent(
       `Halo Rahafa Gold, saya ingin membeli ${product.name} (${formatRupiah(product.total_price)}). Mohon info ketersediaan stoknya.`
     );
-    return `https://wa.me/6285384109496?text=${text}`;
+    return `https://wa.me/6285188071133?text=${text}`;
   };
 
   return (

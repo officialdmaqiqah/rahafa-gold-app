@@ -77,6 +77,8 @@ export async function getReportSummary(startDate: string, endDate: string, type:
             productFreq[pName] = (productFreq[pName] || 0) + item.quantity;
           }
           
+          const isBackdated = Boolean(trx.is_backdated || (trx.notes && trx.notes.includes("TRANSAKSI SUSULAN")));
+
           itemsExport.push({
             No_Transaksi: trx.transaction_number,
             Tanggal: trx.transaction_date,
@@ -86,12 +88,16 @@ export async function getReportSummary(startDate: string, endDate: string, type:
             Qty: item.quantity,
             Harga_Satuan: item.unit_price,
             Total: item.quantity * item.unit_price,
-            Profit: role !== "kasir" ? (item.profit || 0) : "-"
+            Profit: role !== "kasir" ? (item.profit || 0) : "-",
+            Susulan: isBackdated ? "Ya" : "Tidak",
+            Alasan_Susulan: trx.backdate_reason || "-"
           });
         });
       }
       totalProfit += trxProfit;
       
+      const isBackdated = Boolean(trx.is_backdated || (trx.notes && trx.notes.includes("TRANSAKSI SUSULAN")));
+
       trxList.push({
         id: trx.id,
         transaction_number: trx.transaction_number,
@@ -101,7 +107,10 @@ export async function getReportSummary(startDate: string, endDate: string, type:
         total_amount: trx.total_amount,
         profit: role !== "kasir" ? trxProfit : null,
         goods_out: trxGoodsOut,
-        remaining_amount: trx.remaining_amount
+        remaining_amount: trx.remaining_amount,
+        created_at: trx.created_at,
+        is_backdated: isBackdated,
+        backdate_reason: trx.backdate_reason || null
       });
     });
   }
@@ -193,24 +202,29 @@ export async function getStockValuationReport() {
       id,
       quantity_remaining,
       cost_price,
+      status,
       products (id, name, item_code, weight, unit, is_active)
     `)
     .gt("quantity_remaining", 0)
-    .eq("status", "ready")
+    .in("status", ["ready", "hold"])
     .eq("products.is_active", true);
 
   if (batchErr) return { error: batchErr.message };
 
-  const today = new Date().toLocaleDateString('en-CA');
-  const { data: todayPrices } = await supabase
+  // Ambil harga aktif terbaru
+  const { data: activePrices } = await supabase
     .from("daily_prices")
     .select("*")
     .eq("status", "active")
-    .eq("date", today);
+    .order("date", { ascending: false });
     
   const priceMap = new Map();
-  if (todayPrices) {
-    todayPrices.forEach((p: any) => priceMap.set(p.product_id, p));
+  if (activePrices) {
+    activePrices.forEach((p: any) => {
+      if (!priceMap.has(p.product_id)) {
+        priceMap.set(p.product_id, p);
+      }
+    });
   }
 
   // Aggregate by product
@@ -227,6 +241,8 @@ export async function getStockValuationReport() {
           weight: b.products.weight,
           unit: b.products.unit,
           total_qty: 0,
+          qty_ready: 0,
+          qty_hold: 0,
           total_modal: 0, // only for admin
           prices: priceMap.get(pid) || { retail_sell_price: 0, reseller_sell_price: 0, buyback_price: 0 },
           has_hold: false
@@ -234,6 +250,12 @@ export async function getStockValuationReport() {
       }
       
       productStocks[pid].total_qty += b.quantity_remaining;
+      if (b.status === "hold") {
+        productStocks[pid].qty_hold += b.quantity_remaining;
+        productStocks[pid].has_hold = true;
+      } else {
+        productStocks[pid].qty_ready += b.quantity_remaining;
+      }
       productStocks[pid].total_modal += (b.quantity_remaining * b.cost_price);
       
       const p = productStocks[pid].prices;

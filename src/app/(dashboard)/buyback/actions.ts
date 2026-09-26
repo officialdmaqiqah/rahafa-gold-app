@@ -2,17 +2,23 @@
 
 import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { verifyOwnerPin } from "@/lib/auth";
 
 export async function getBuybackData() {
   const [productsRes, pricesRes, customersRes] = await Promise.all([
     supabase.from("products").select("*").eq("is_active", true).order("name"),
-    supabase.from("daily_prices").select("*").eq("status", "active").eq("date", new Date().toLocaleDateString('en-CA')),
+    supabase.from("daily_prices").select("*").eq("status", "active").order("date", { ascending: false }),
     supabase.from("customers").select("*").order("name")
   ]);
 
   const priceMap = new Map();
   if (pricesRes.data) {
-    pricesRes.data.forEach((p: any) => priceMap.set(p.product_id, p));
+    pricesRes.data.forEach((p: any) => {
+      // Set only the latest active price per product
+      if (!priceMap.has(p.product_id)) {
+        priceMap.set(p.product_id, p);
+      }
+    });
   }
 
   const products = (productsRes.data || []).map((p: any) => ({
@@ -28,6 +34,17 @@ export async function getBuybackData() {
 
 export async function checkoutBuyback(payload: any) {
   const { customerId, customerName, customerPhone, items, totalPaid, notes } = payload;
+
+  if (!items || items.length === 0) {
+    return { error: "Keranjang buyback masih kosong" };
+  }
+
+  // Validasi harga buyback
+  for (const item of items) {
+    if (!item.unitPrice || item.unitPrice <= 0) {
+      return { error: `Harga buyback untuk "${item.name}" belum valid atau 0. Update harga dulu sebelum buyback.` };
+    }
+  }
   
   let finalCustomerId = customerId;
 
@@ -112,7 +129,13 @@ export async function checkoutBuyback(payload: any) {
   return { success: true, transactionId: trx.id };
 }
 
-export async function cancelBuyback(transactionId: string) {
+export async function cancelBuyback(transactionId: string, ownerPin: string) {
+  // 0. Cek PIN Owner
+  const pinCheck = await verifyOwnerPin(ownerPin);
+  if (!pinCheck.valid) {
+    return { error: pinCheck.error || "PIN Owner salah. Pembatalan buyback ditolak." };
+  }
+
   // 1. Cek apakah ada stock_batches dari transaksi ini yang sudah terjual
   const { data: batches } = await supabase
     .from("stock_batches")

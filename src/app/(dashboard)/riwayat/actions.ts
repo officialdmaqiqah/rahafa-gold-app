@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { verifyOwnerPin } from "@/lib/auth";
 
 export async function getTransactionHistory(limit = 100) {
   // 1. Ambil data Transaksi & Barang Masuk secara paralel
@@ -92,8 +93,14 @@ export async function getTransactionHistory(limit = 100) {
   return history.slice(0, limit);
 }
 
-export async function voidTransaction(id: string, type: string) {
+export async function voidTransaction(id: string, type: string, ownerPin: string) {
   try {
+    // 0. Verifikasi PIN Owner
+    const pinCheck = await verifyOwnerPin(ownerPin);
+    if (!pinCheck.valid) {
+      return { error: pinCheck.error || "PIN Owner salah. Pembatalan (VOID) ditolak." };
+    }
+
     if (type === "stock_in") {
       // Pembatalan Barang Masuk
       // Validasi: Pastikan quantity_remaining == quantity_in (belum ada yang terjual)

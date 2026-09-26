@@ -168,7 +168,7 @@ export function StorefrontHeader({
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {/* WA Konsultasi (Tablet & Desktop only) */}
           <a
-            href={`https://wa.me/6285384109496?text=${whatsappMessage}`}
+            href={`https://wa.me/6285188071133?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 px-3.5 py-2 rounded-lg transition-all text-xs font-bold tracking-wide"
@@ -248,7 +248,7 @@ export function StorefrontHeader({
 
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
             <a
-              href={`https://wa.me/6285384109496?text=${whatsappMessage}`}
+              href={`https://wa.me/6285188071133?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full text-center py-2 px-4 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center gap-2"

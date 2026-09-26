@@ -94,6 +94,10 @@ export interface Transaction {
   payment_method?: string;
   status: TransactionStatus;
   notes?: string;
+  is_backdated?: boolean;
+  backdate_reason?: string;
+  price_source_date?: string;
+  manual_price_override?: boolean;
   created_by?: string; // UUID
   created_at: string;
   updated_at: string;

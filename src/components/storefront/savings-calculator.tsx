@@ -56,7 +56,7 @@ export function SavingsCalculator({
     const text = encodeURIComponent(
       `Halo Rahafa Gold, saya ingin memulai program tabungan/akumulasi emas rutin sebesar ${formatRupiah(monthlyAmount)} per bulan. Bagaimana langkah pendaftaran dan penyimpanannya?`
     );
-    return `https://wa.me/6285384109496?text=${text}`;
+    return `https://wa.me/6285188071133?text=${text}`;
   };
 
   return (

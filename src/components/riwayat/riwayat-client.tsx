@@ -28,6 +28,7 @@ export function RiwayatClient() {
   // Void state
   const [voidModalOpen, setVoidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [voidPin, setVoidPin] = useState("");
   const [voiding, setVoiding] = useState(false);
   const [voidError, setVoidError] = useState("");
 
@@ -64,16 +65,21 @@ export function RiwayatClient() {
 
   const handleOpenVoid = (item: any) => {
     setSelectedItem(item);
+    setVoidPin("");
     setVoidError("");
     setVoidModalOpen(true);
   };
 
   const handleConfirmVoid = async () => {
     if (!selectedItem) return;
+    if (!voidPin || voidPin.trim() === "") {
+      setVoidError("PIN Owner wajib diisi untuk otorisasi pembatalan.");
+      return;
+    }
     setVoiding(true);
     setVoidError("");
 
-    const res = await voidTransaction(selectedItem.id, selectedItem.type);
+    const res = await voidTransaction(selectedItem.id, selectedItem.type, voidPin);
     
     if (res?.error) {
       setVoidError(res.error);
@@ -82,6 +88,7 @@ export function RiwayatClient() {
       setVoiding(false);
       setVoidModalOpen(false);
       setSelectedItem(null);
+      setVoidPin("");
       fetchData(); // Refresh data
     }
   };
@@ -248,8 +255,22 @@ export function RiwayatClient() {
             </div>
           )}
 
+          <div className="space-y-2 mt-2 px-2">
+            <Label className="text-xs font-semibold text-slate-700">
+              Otorisasi PIN Owner <span className="text-red-500">*</span>
+            </Label>
+            <Input 
+              type="password" 
+              maxLength={10} 
+              placeholder="Masukkan PIN Owner" 
+              value={voidPin} 
+              onChange={e => { setVoidPin(e.target.value); setVoidError(""); }}
+              className="text-center font-bold tracking-widest text-lg h-11 border-red-300 focus:border-red-500 bg-white"
+            />
+          </div>
+
           {voidError && (
-            <div className="p-3 mx-2 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm mt-4 font-medium flex gap-2 items-start">
+            <div className="p-3 mx-2 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm mt-3 font-medium flex gap-2 items-start">
               <AlertTriangle className="h-5 w-5 shrink-0" />
               {voidError}
             </div>
@@ -262,8 +283,8 @@ export function RiwayatClient() {
             <Button 
               variant="destructive" 
               onClick={handleConfirmVoid} 
-              disabled={voiding}
-              className="w-full sm:w-auto rounded-full h-11 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border border-red-100 font-semibold shadow-sm"
+              disabled={voiding || !voidPin}
+              className="w-full sm:w-auto rounded-full h-11 bg-red-600 text-white hover:bg-red-700 font-semibold shadow-sm"
             >
               {voiding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
               Ya, Batalkan Transaksi
