@@ -10,6 +10,7 @@ export type TransactionStatus = 'draft' | 'final' | 'cancelled';
 export interface User {
   id: string; // UUID
   name: string;
+  username?: string | null;
   whatsapp_number: string;
   whatsapp_number_normalized: string;
   pin_hash: string;

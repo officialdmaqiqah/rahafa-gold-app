@@ -50,20 +50,23 @@ function LoginForm() {
           )}
           
           <div className="space-y-2.5">
-            <Label htmlFor="whatsapp" className="text-blue-950 dark:text-blue-100 font-semibold">Username / Nomor WA</Label>
+            <Label htmlFor="identifier" className="text-blue-950 dark:text-blue-100 font-semibold">Username / Nomor WhatsApp</Label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors group-focus-within:text-primary text-blue-900/40 dark:text-blue-200/40">
                 <User className="h-5 w-5" strokeWidth={1.5} />
               </div>
               <Input 
-                id="whatsapp" 
-                name="whatsapp" 
-                placeholder="Contoh: admin atau 0853..." 
+                id="identifier" 
+                name="identifier" 
+                placeholder="owner, admin, atau nomor WhatsApp" 
                 type="text" 
                 className="pl-11 h-12 bg-blue-50/50 dark:bg-[#0f172a] border-blue-100 dark:border-blue-900/50 text-blue-950 dark:text-blue-50 placeholder:text-blue-900/40 dark:placeholder:text-blue-200/40 focus-visible:ring-primary/50 focus-visible:border-primary transition-all rounded-lg"
                 required 
               />
             </div>
+            <p className="text-xs text-blue-900/60 dark:text-blue-200/60 pl-1">
+              Contoh: owner / admin / 0851xxxx
+            </p>
           </div>
           
           <div className="space-y-2.5">
